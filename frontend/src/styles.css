@@ -42,6 +42,7 @@ a {
 
 .shell {
   position: relative;
+  min-height: 100vh;
   overflow: hidden;
   isolation: isolate;
 }
@@ -138,6 +139,11 @@ main {
   padding: 16px 0 56px;
   display: grid;
   gap: 1.8rem;
+}
+
+.login-main {
+  min-height: 100vh;
+  align-content: center;
 }
 
 .hero {
@@ -422,6 +428,20 @@ input:focus {
   border: 1px solid var(--line);
   background: #fff;
   color: var(--ink-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .role-label {
