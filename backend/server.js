@@ -5,6 +5,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LIVE_QUIZ_SYSTEM_PROMPT, buildLiveQuizUserPrompt } from "./prompts/liveQuizPrompts.js";
+import {
+  initMysqlStateStore,
+  isMysqlStateStoreConfigured,
+  readMysqlTeacherState,
+  writeMysqlTeacherState,
+} from "./db/mysqlStateStore.js";
 
 dotenv.config();
 
@@ -13,15 +19,14 @@ app.use(express.json());
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173" }));
 
 const PORT = Number(process.env.PORT || 3001);
-const REGION = process.env.OCI_REGION || "us-chicago-1";
-const BASE = `https://inference.generativeai.${REGION}.oci.oraclecloud.com/20231130/actions/v1`;
-const KEY = process.env.OCI_GENAI_API_KEY;
-const DEFAULT_MODEL = process.env.OCI_MODEL || "meta.llama-3.3-70b-instruct";
-const LIVE_QUIZ_MODEL = process.env.OCI_LIVE_QUIZ_MODEL || DEFAULT_MODEL;
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+const GEMINI_LIVE_QUIZ_MODEL = process.env.GEMINI_LIVE_QUIZ_MODEL || GEMINI_MODEL;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const DATA_DIR = join(__dirname, "data");
 const TEACHER_DB_PATH = join(DATA_DIR, "teacher-portal.json");
+const STORAGE_PROVIDER = (process.env.STORAGE_PROVIDER || "mysql").toLowerCase();
 
 const defaultTeacherData = {
   classes: [
@@ -92,11 +97,11 @@ const defaultTeacherData = {
   ],
 };
 
-if (!KEY) {
-  console.warn("OCI_GENAI_API_KEY is missing. /api/chat will be disabled until key is set.");
+if (!GEMINI_KEY) {
+  console.warn("GEMINI_API_KEY is missing. /api/chat and generation endpoints will be disabled until key is set.");
 }
 
-async function ensureTeacherDb() {
+async function ensureLocalTeacherDb() {
   await mkdir(DATA_DIR, { recursive: true });
   try {
     await readFile(TEACHER_DB_PATH, "utf8");
@@ -105,11 +110,7 @@ async function ensureTeacherDb() {
   }
 }
 
-async function readTeacherDb() {
-  await ensureTeacherDb();
-  const raw = await readFile(TEACHER_DB_PATH, "utf8");
-  const parsed = JSON.parse(raw);
-
+function normalizeTeacherDb(parsed) {
   // Backward-compatible normalization for older local data shape.
   parsed.classes = (parsed.classes || []).map((classItem) => {
     const normalizedStudents = Array.isArray(classItem.students)
@@ -138,7 +139,34 @@ async function readTeacherDb() {
   return parsed;
 }
 
+async function readTeacherDb() {
+  if (STORAGE_PROVIDER === "mysql") {
+    if (!isMysqlStateStoreConfigured()) {
+      throw new Error(
+        "MySQL storage selected but DB credentials are missing. Set MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE."
+      );
+    }
+    await initMysqlStateStore();
+    const db = await readMysqlTeacherState(defaultTeacherData);
+    return normalizeTeacherDb(db);
+  }
+
+  await ensureLocalTeacherDb();
+  const raw = await readFile(TEACHER_DB_PATH, "utf8");
+  return normalizeTeacherDb(JSON.parse(raw));
+}
+
 async function writeTeacherDb(data) {
+  if (STORAGE_PROVIDER === "mysql") {
+    if (!isMysqlStateStoreConfigured()) {
+      throw new Error(
+        "MySQL storage selected but DB credentials are missing. Set MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE."
+      );
+    }
+    await initMysqlStateStore();
+    await writeMysqlTeacherState(data);
+    return;
+  }
   await writeFile(TEACHER_DB_PATH, JSON.stringify(data, null, 2));
 }
 
@@ -152,6 +180,20 @@ function extractJsonObject(text) {
     return JSON.parse(raw);
   } catch {
     return null;
+  }
+}
+
+function extractStructuredObject(value) {
+  if (!value) return null;
+  if (typeof value === "object" && !Array.isArray(value)) return value;
+  if (typeof value !== "string") return null;
+  const direct = value.trim();
+  if (!direct) return null;
+  try {
+    const parsed = JSON.parse(direct);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return extractJsonObject(direct);
   }
 }
 
@@ -333,21 +375,208 @@ function buildFallbackPracticeAppHtml({ assessmentTitle, teacherPrompt, keyConce
 </html>`;
 }
 
-async function callOciChat({ messages, model }) {
-  const r = await fetch(`${BASE}/chat/completions`, {
+function toGeminiPayload(messages) {
+  const safeMessages = Array.isArray(messages) ? messages : [];
+  const systemParts = safeMessages
+    .filter((message) => message?.role === "system" && typeof message?.content === "string" && message.content.trim())
+    .map((message) => ({ text: message.content.trim() }));
+
+  const contents = safeMessages
+    .filter((message) => message?.role !== "system")
+    .map((message) => ({
+      role: message?.role === "assistant" ? "model" : "user",
+      parts: [{ text: String(message?.content || "") }],
+    }));
+
+  if (!contents.length) {
+    contents.push({ role: "user", parts: [{ text: "" }] });
+  }
+
+  return {
+    ...(systemParts.length ? { systemInstruction: { parts: systemParts } } : {}),
+    contents,
+  };
+}
+
+function extractGeminiText(response) {
+  const parts = response?.candidates?.[0]?.content?.parts;
+  if (!Array.isArray(parts)) return "";
+  return parts
+    .map((part) => (typeof part?.text === "string" ? part.text : ""))
+    .join("\n")
+    .trim();
+}
+
+async function callGeminiChat({ messages, model, jsonMode = false, responseSchema = null }) {
+  const selectedModel = model || GEMINI_MODEL;
+  const payload = toGeminiPayload(messages);
+  if (jsonMode) {
+    payload.generationConfig = {
+      ...(payload.generationConfig || {}),
+      responseMimeType: "application/json",
+      ...(responseSchema ? { responseSchema } : {}),
+    };
+  }
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(selectedModel)}:generateContent?key=${encodeURIComponent(GEMINI_KEY || "")}`,
+    {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ model, messages }),
-  });
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }
+  );
 
   const data = await r.json().catch(() => ({}));
   if (!r.ok) {
-    throw new Error(`OCI chat failed (${r.status}): ${JSON.stringify(data)}`);
+    throw new Error(`Gemini chat failed (${r.status}): ${JSON.stringify(data)}`);
   }
   return data;
+}
+
+const liveQuizResponseSchema = {
+  type: "OBJECT",
+  properties: {
+    realismProfile: { type: "STRING" },
+    caseReferences: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          tag: { type: "STRING" },
+          title: { type: "STRING" },
+          sourceHint: { type: "STRING" },
+        },
+      },
+    },
+    pages: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          focusConcept: { type: "STRING" },
+          scenarioTitle: { type: "STRING" },
+          caseContext: { type: "STRING" },
+          taskPrompt: { type: "STRING" },
+          conceptQuestion: {
+            type: "OBJECT",
+            properties: {
+              prompt: { type: "STRING" },
+              options: { type: "ARRAY", items: { type: "STRING" } },
+              correctIndex: { type: "NUMBER" },
+            },
+          },
+        },
+      },
+    },
+    practiceAppHtml: { type: "STRING" },
+  },
+};
+
+const liveQuestionResponseSchema = {
+  type: "OBJECT",
+  properties: {
+    prompt: { type: "STRING" },
+    options: { type: "ARRAY", items: { type: "STRING" } },
+    correctIndex: { type: "NUMBER" },
+    guidance: { type: "STRING" },
+  },
+};
+
+const liveQuestionCache = new Map();
+
+function getQuestionCacheKey({ assessmentTitle, teacherPrompt, keyConcepts, focusConcept }) {
+  return JSON.stringify({
+    assessmentTitle: String(assessmentTitle || ""),
+    teacherPrompt: String(teacherPrompt || ""),
+    keyConcepts: Array.isArray(keyConcepts) ? keyConcepts.map((item) => String(item).trim()).filter(Boolean) : [],
+    focusConcept: String(focusConcept || ""),
+  });
+}
+
+async function generateLiveQuestionWithGemini({ assessmentTitle, teacherPrompt, keyConcepts, focusConcept, userState }) {
+  const safeConcepts = Array.isArray(keyConcepts)
+    ? keyConcepts.map((item) => String(item).trim()).filter(Boolean)
+    : [];
+  const resolvedConcept = String(focusConcept || safeConcepts[0] || "Statement Analysis");
+  const state = {
+    asked: Number(userState?.asked || 0),
+    correct: Number(userState?.correct || 0),
+    recentMistakes: Array.isArray(userState?.recentMistakes) ? userState.recentMistakes.slice(0, 5) : [],
+  };
+
+  if (!GEMINI_KEY) {
+    return buildFallbackLiveQuestion({ focusConcept: resolvedConcept });
+  }
+
+  const liveQuestionSystemPrompt = `
+You generate one adaptive assessment question as strict JSON only.
+Return exactly this shape:
+{
+  "prompt": "string",
+  "options": ["string", "string", "string", "string"],
+  "correctIndex": 0,
+  "guidance": "string"
+}
+Constraints:
+- Make the question scenario-based and realistic.
+- Keep options plausible with one best answer.
+- Use the focus concept and adapt to user performance state.
+- Keep the prompt concise (max ~280 characters) and readable.
+- Do not dump raw tables, csv-style text, or long ledgers into the prompt.
+- Keep each option concise (max ~140 characters).
+`.trim();
+
+  const messages = [
+    { role: "system", content: liveQuestionSystemPrompt },
+    {
+      role: "user",
+      content: `
+Assessment title: ${assessmentTitle || "Practice Assessment"}
+Teacher prompt: ${teacherPrompt || "N/A"}
+Key concepts: ${safeConcepts.length ? safeConcepts.join(", ") : "Statement Analysis, Error Detection, Journal Adjustments"}
+Focus concept: ${resolvedConcept}
+User state (for adaptation): ${JSON.stringify(state)}
+      `.trim(),
+    },
+  ];
+
+  try {
+    const gemini = await callGeminiChat({
+      messages,
+      model: GEMINI_LIVE_QUIZ_MODEL,
+      jsonMode: true,
+      responseSchema: liveQuestionResponseSchema,
+    });
+    const text = extractGeminiText(gemini);
+    const parsed = extractStructuredObject(text);
+    const question = normalizeLiveQuestion(parsed, resolvedConcept);
+    return question || buildFallbackLiveQuestion({ focusConcept: resolvedConcept });
+  } catch (geminiError) {
+    console.error("Live question generation via Gemini failed:", geminiError);
+    return buildFallbackLiveQuestion({ focusConcept: resolvedConcept });
+  }
+}
+
+function prewarmNextQuestion(cacheKey, context) {
+  const entry = liveQuestionCache.get(cacheKey) || {};
+  if (entry.inFlight) return;
+
+  const inFlight = (async () => {
+    const warmed = await generateLiveQuestionWithGemini(context);
+    const next = liveQuestionCache.get(cacheKey) || {};
+    next.warmed = warmed;
+    next.lastUpdatedAt = Date.now();
+    next.inFlight = null;
+    liveQuestionCache.set(cacheKey, next);
+  })().catch(() => {
+    const next = liveQuestionCache.get(cacheKey) || {};
+    next.inFlight = null;
+    liveQuestionCache.set(cacheKey, next);
+  });
+
+  entry.inFlight = inFlight;
+  liveQuestionCache.set(cacheKey, entry);
 }
 
 function buildGeneratedQuizBlueprint({ prompt, keyConcepts }) {
@@ -458,7 +687,14 @@ function buildFallbackLiveQuestion({ focusConcept }) {
 }
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, region: REGION, model: DEFAULT_MODEL, chatReady: Boolean(KEY) });
+  res.json({
+    ok: true,
+    llmProvider: "gemini",
+    model: GEMINI_MODEL,
+    chatReady: Boolean(GEMINI_KEY),
+    storageProvider: STORAGE_PROVIDER,
+    mysqlConfigured: isMysqlStateStoreConfigured(),
+  });
 });
 
 app.get("/api/teacher/classes", async (_req, res) => {
@@ -593,8 +829,8 @@ app.post("/api/teacher/classes/:classId/assessments/:assessmentId/generate-live-
   try {
     const { classId, assessmentId } = req.params;
     const { prompt = "", keyConcepts = [] } = req.body;
-    if (!KEY) {
-      return res.status(503).json({ error: "OCI_GENAI_API_KEY missing. Cannot generate live quiz." });
+    if (!GEMINI_KEY) {
+      return res.status(503).json({ error: "GEMINI_API_KEY missing. Cannot generate live quiz." });
     }
 
     const db = await readTeacherDb();
@@ -623,15 +859,17 @@ app.post("/api/teacher/classes/:classId/assessments/:assessmentId/generate-live-
 
     let generated = null;
     try {
-      const oci = await callOciChat({ messages, model: LIVE_QUIZ_MODEL });
-      const text =
-        oci?.choices?.[0]?.message?.content ||
-        oci?.choices?.[0]?.text ||
-        "";
-      const parsed = extractJsonObject(text);
+      const gemini = await callGeminiChat({
+        messages,
+        model: GEMINI_LIVE_QUIZ_MODEL,
+        jsonMode: true,
+        responseSchema: liveQuizResponseSchema,
+      });
+      const text = extractGeminiText(gemini);
+      const parsed = extractStructuredObject(text);
       generated = normalizeGeneratedQuiz(parsed, resolvedPrompt, resolvedConcepts);
-    } catch (ociError) {
-      console.error("Live quiz generation via OCI failed:", ociError);
+    } catch (geminiError) {
+      console.error("Live quiz generation via Gemini failed:", geminiError);
     }
 
     if (!generated) {
@@ -640,7 +878,9 @@ app.post("/api/teacher/classes/:classId/assessments/:assessmentId/generate-live-
         keyConcepts: resolvedConcepts,
       });
       generated.fallback = true;
-      generated.fallbackReason = "Used local fallback because OCI response was unavailable or malformed.";
+      generated.fallbackReason = "Used local fallback because Gemini response was unavailable or malformed.";
+    } else {
+      generated.fallback = false;
     }
     if (!generated.practiceAppHtml) {
       generated.practiceAppHtml = buildFallbackPracticeAppHtml({
@@ -653,6 +893,91 @@ app.post("/api/teacher/classes/:classId/assessments/:assessmentId/generate-live-
     assessment.generatedQuiz = generated;
     await writeTeacherDb(db);
     return res.json(generated);
+  } catch (e) {
+    return res.status(500).json({ error: String(e) });
+  }
+});
+
+app.post("/api/teacher/classes/:classId/assessments/:assessmentId/generate-sample-practice", async (req, res) => {
+  try {
+    const { classId, assessmentId } = req.params;
+    const { prompt = "", keyConcepts = [] } = req.body;
+    if (!GEMINI_KEY) {
+      return res.status(503).json({ error: "GEMINI_API_KEY missing. Cannot generate sample practice test." });
+    }
+
+    const db = await readTeacherDb();
+    const classItem = db.classes.find((item) => item.id === classId);
+    if (!classItem) return res.status(404).json({ error: "Class not found" });
+
+    const assessment = (classItem.assessments || []).find((item) => item.id === assessmentId);
+    if (!assessment) return res.status(404).json({ error: "Assessment not found" });
+
+    const resolvedPrompt = prompt.trim() || assessment.prompt;
+    const resolvedConcepts =
+      Array.isArray(keyConcepts) && keyConcepts.length ? keyConcepts : assessment.keyConcepts;
+
+    const sampleSpecificInstruction = `
+Generate a sample PRACTICE preview only:
+- Keep it lightweight and fast.
+- Produce 1 or 2 pages only.
+- Keep scenarios concise while still realistic.
+- Prioritize visual quality and interaction structure.
+`.trim();
+
+    const messages = [
+      { role: "system", content: LIVE_QUIZ_SYSTEM_PROMPT.trim() },
+      {
+        role: "user",
+        content: `${buildLiveQuizUserPrompt({
+          title: assessment.title,
+          teacherPrompt: resolvedPrompt,
+          keyConcepts: resolvedConcepts,
+          files: assessment.files || [],
+        })}
+
+${sampleSpecificInstruction}`,
+      },
+    ];
+
+    let generated = null;
+    try {
+      const gemini = await callGeminiChat({
+        messages,
+        model: GEMINI_LIVE_QUIZ_MODEL,
+        jsonMode: true,
+        responseSchema: liveQuizResponseSchema,
+      });
+      const text = extractGeminiText(gemini);
+      const parsed = extractStructuredObject(text);
+      generated = normalizeGeneratedQuiz(parsed, resolvedPrompt, resolvedConcepts);
+    } catch (geminiError) {
+      console.error("Sample practice generation via Gemini failed:", geminiError);
+    }
+
+    if (!generated) {
+      generated = buildGeneratedQuizBlueprint({
+        prompt: resolvedPrompt,
+        keyConcepts: resolvedConcepts,
+      });
+      generated.fallback = true;
+      generated.fallbackReason = "Used local fallback because Gemini response was unavailable or malformed.";
+    } else {
+      generated.fallback = false;
+    }
+    if (!generated.practiceAppHtml) {
+      generated.practiceAppHtml = buildFallbackPracticeAppHtml({
+        assessmentTitle: `${assessment.title} (Sample)`,
+        teacherPrompt: resolvedPrompt,
+        keyConcepts: generated.keyConcepts || resolvedConcepts || [],
+      });
+    }
+
+    return res.json({
+      ...generated,
+      sample: true,
+      persisted: false,
+    });
   } catch (e) {
     return res.status(500).json({ error: String(e) });
   }
@@ -741,65 +1066,43 @@ app.post("/api/student/live-question", async (req, res) => {
       userState = {},
     } = req.body || {};
 
-    const safeConcepts = Array.isArray(keyConcepts)
-      ? keyConcepts.map((item) => String(item).trim()).filter(Boolean)
-      : [];
+    const safeConcepts = Array.isArray(keyConcepts) ? keyConcepts : [];
     const resolvedConcept = String(focusConcept || safeConcepts[0] || "Statement Analysis");
-    const state = {
-      asked: Number(userState?.asked || 0),
-      correct: Number(userState?.correct || 0),
-      recentMistakes: Array.isArray(userState?.recentMistakes) ? userState.recentMistakes.slice(0, 5) : [],
+    const context = {
+      assessmentTitle,
+      teacherPrompt,
+      keyConcepts: safeConcepts,
+      focusConcept: resolvedConcept,
+      userState: userState || {},
     };
+    const cacheKey = getQuestionCacheKey(context);
+    const cached = liveQuestionCache.get(cacheKey);
 
-    if (!KEY) {
-      return res.json(buildFallbackLiveQuestion({ focusConcept: resolvedConcept }));
+    if (cached?.warmed) {
+      const responseQuestion = cached.warmed;
+      cached.current = responseQuestion;
+      cached.warmed = null;
+      cached.lastUpdatedAt = Date.now();
+      liveQuestionCache.set(cacheKey, cached);
+      prewarmNextQuestion(cacheKey, context);
+      return res.json(responseQuestion);
     }
 
-    const liveQuestionSystemPrompt = `
-You generate one adaptive assessment question as strict JSON only.
-Return exactly this shape:
-{
-  "prompt": "string",
-  "options": ["string", "string", "string", "string"],
-  "correctIndex": 0,
-  "guidance": "string"
-}
-Constraints:
-- Make the question scenario-based and realistic.
-- Keep options plausible with one best answer.
-- Use the focus concept and adapt to user performance state.
-`;
-
-    const messages = [
-      { role: "system", content: liveQuestionSystemPrompt.trim() },
-      {
-        role: "user",
-        content: `
-Assessment title: ${assessmentTitle}
-Teacher prompt: ${teacherPrompt || "N/A"}
-Key concepts: ${safeConcepts.length ? safeConcepts.join(", ") : "Statement Analysis, Error Detection, Journal Adjustments"}
-Focus concept: ${resolvedConcept}
-User state (for adaptation): ${JSON.stringify(state)}
-        `.trim(),
-      },
-    ];
-
-    try {
-      const oci = await callOciChat({ messages, model: LIVE_QUIZ_MODEL });
-      const text =
-        oci?.choices?.[0]?.message?.content ||
-        oci?.choices?.[0]?.text ||
-        "";
-      const parsed = extractJsonObject(text);
-      const question = normalizeLiveQuestion(parsed, resolvedConcept);
-      if (!question) {
-        return res.json(buildFallbackLiveQuestion({ focusConcept: resolvedConcept }));
-      }
-      return res.json(question);
-    } catch (ociError) {
-      console.error("Live question generation via OCI failed:", ociError);
-      return res.json(buildFallbackLiveQuestion({ focusConcept: resolvedConcept }));
+    if (cached?.current) {
+      prewarmNextQuestion(cacheKey, context);
+      return res.json(cached.current);
     }
+
+    const question = await generateLiveQuestionWithGemini(context);
+    liveQuestionCache.set(cacheKey, {
+      ...(cached || {}),
+      current: question,
+      warmed: null,
+      lastUpdatedAt: Date.now(),
+      inFlight: null,
+    });
+    prewarmNextQuestion(cacheKey, context);
+    return res.json(question);
   } catch (e) {
     return res.status(500).json({ error: String(e) });
   }
@@ -807,35 +1110,19 @@ User state (for adaptation): ${JSON.stringify(state)}
 
 app.post("/api/chat", async (req, res) => {
   try {
-    if (!KEY) {
+    if (!GEMINI_KEY) {
       return res.status(503).json({
-        error: "OCI_GENAI_API_KEY missing. Set it in backend/.env to enable /api/chat.",
+        error: "GEMINI_API_KEY missing. Set it in backend/.env to enable /api/chat.",
       });
     }
 
-    const { messages, model = DEFAULT_MODEL } = req.body;
+    const { messages, model = GEMINI_MODEL } = req.body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: "messages must be a non-empty array" });
     }
 
-    const r = await fetch(`${BASE}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ model, messages }),
-    });
-
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      return res.status(r.status).json({
-        error: "Oracle GenAI request failed",
-        details: data,
-      });
-    }
-
+    const data = await callGeminiChat({ messages, model });
     return res.status(200).json(data);
   } catch (e) {
     return res.status(500).json({ error: String(e) });

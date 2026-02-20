@@ -1,12 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-function fakeGenerateTest({ title, prompt, keyConcepts, files }) {
-  const now = new Date().toLocaleString();
-  const conceptsLine = keyConcepts.length ? keyConcepts.join(", ") : "No key concepts provided";
-  const fileLine = files.length ? files.map((file) => file.name).join(", ") : "No files uploaded";
+function formatSampleSummary(generated) {
+  if (!generated || typeof generated !== "object") return "";
+  const lines = [
+    `Sample Practice Test Generated: ${new Date().toLocaleString()}`,
+    `Profile: ${generated.realismProfile || "interactive-workbook-sim"}`,
+    `Pages: ${(generated.pages || []).length}`,
+    "",
+    "Case References:",
+  ];
+  const refs = Array.isArray(generated.caseReferences) ? generated.caseReferences : [];
+  if (!refs.length) {
+    lines.push("- None");
+  } else {
+    refs.forEach((ref) => lines.push(`- ${ref.title} (${ref.sourceHint})`));
+  }
+  lines.push("", "Target Concepts:");
+  const concepts = Array.isArray(generated.keyConcepts) ? generated.keyConcepts : [];
+  if (!concepts.length) {
+    lines.push("- None");
+  } else {
+    concepts.forEach((concept) => lines.push(`- ${concept}`));
+  }
+  if (generated.fallback) {
+    lines.push("", "Note: fallback sample was used due to model parse/availability.");
+  }
+  return lines.join("\n");
+}
 
-  return `Sample Generated Test\nGenerated: ${now}\n\nAssessment: ${title}\n\nTeacher Prompt:\n${prompt}\n\nKey Concepts:\n- ${conceptsLine}\n\nAttached Sources:\n- ${fileLine}\n\nSection A (MCQ)\n1) Which option best applies the core concept?\n2) Select the strongest justification.\n\nSection B (Short Answer)\n1) Explain your approach in 3-5 sentences.\n2) Identify one common error and how to avoid it.\n\nScoring Rubric\n- Accuracy: 40%\n- Clarity: 30%\n- Reasoning: 30%`;
+async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("Request timed out. Check backend server and database connection settings.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export default function TeacherPortalPage() {
@@ -24,6 +59,7 @@ export default function TeacherPortalPage() {
   const [editFiles, setEditFiles] = useState([]);
   const [generatedQuizPreview, setGeneratedQuizPreview] = useState(null);
   const [generatedSample, setGeneratedSample] = useState("");
+  const [generatedSampleQuiz, setGeneratedSampleQuiz] = useState(null);
   const [editClassName, setEditClassName] = useState("");
   const [editClassStatus, setEditClassStatus] = useState("Active");
   const [studentDraft, setStudentDraft] = useState("");
@@ -48,7 +84,7 @@ export default function TeacherPortalPage() {
       setIsLoading(true);
       setError("");
       try {
-        const res = await fetch("/api/teacher/classes");
+        const res = await fetchWithTimeout("/api/teacher/classes");
         const data = await res.json();
         if (!res.ok) throw new Error(data?.error || "Failed to load classes");
 
@@ -83,6 +119,7 @@ export default function TeacherPortalPage() {
       setGeneratedQuizPreview(selectedAssessment.generatedQuiz || null);
       setNewKeyConcept("");
       setGeneratedSample("");
+      setGeneratedSampleQuiz(null);
     }
   }, [selectedAssessment, panelMode]);
 
@@ -103,7 +140,7 @@ export default function TeacherPortalPage() {
     setIsSaving(true);
     setError("");
     try {
-      const res = await fetch("/api/teacher/classes", {
+      const res = await fetchWithTimeout("/api/teacher/classes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newClassName, status: "Active" }),
@@ -278,7 +315,7 @@ export default function TeacherPortalPage() {
     setIsSaving(true);
     setError("");
     try {
-      const res = await fetch(
+      const res = await fetchWithTimeout(
         `/api/teacher/classes/${selectedClass.id}/assessments/${selectedAssessment.id}/generate-live-quiz`,
         {
           method: "POST",
@@ -287,12 +324,15 @@ export default function TeacherPortalPage() {
             prompt: editPrompt,
             keyConcepts: editKeyConcepts.map((item) => item.trim()).filter(Boolean),
           }),
-        }
+        },
+        60000
       );
       const generated = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(generated?.error || "Failed to generate live quiz");
 
       setGeneratedQuizPreview(generated);
+      setGeneratedSample("");
+      setGeneratedSampleQuiz(null);
       setClasses((prev) =>
         prev.map((classItem) =>
           classItem.id !== selectedClass.id
@@ -307,6 +347,35 @@ export default function TeacherPortalPage() {
               }
         )
       );
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function generateSamplePracticeTest() {
+    if (!selectedClass || !selectedAssessment) return;
+
+    setIsSaving(true);
+    setError("");
+    try {
+      const res = await fetchWithTimeout(
+        `/api/teacher/classes/${selectedClass.id}/assessments/${selectedAssessment.id}/generate-sample-practice`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: editPrompt,
+            keyConcepts: editKeyConcepts.map((item) => item.trim()).filter(Boolean),
+          }),
+        },
+        45000
+      );
+      const generated = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(generated?.error || "Failed to generate sample practice test");
+      setGeneratedSample(formatSampleSummary(generated));
+      setGeneratedSampleQuiz(generated);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -706,16 +775,8 @@ export default function TeacherPortalPage() {
                   <button
                     type="button"
                     className="btn btn-ghost"
-                    onClick={() =>
-                      setGeneratedSample(
-                        fakeGenerateTest({
-                          title: editTitle,
-                          prompt: editPrompt,
-                          keyConcepts: editKeyConcepts,
-                          files: editFiles,
-                        })
-                      )
-                    }
+                    onClick={generateSamplePracticeTest}
+                    disabled={isSaving}
                   >
                     Generate Sample Test
                   </button>
@@ -723,8 +784,26 @@ export default function TeacherPortalPage() {
 
                 {generatedSample && (
                   <>
-                    <p className="portal-subtitle">Sample Generated Test (Fake AI Output)</p>
+                    <p className="portal-subtitle">Sample Practice Test Preview</p>
                     <pre className="prompt-box">{generatedSample}</pre>
+                    {generatedSampleQuiz?.practiceAppHtml && (
+                      <div className="practice-app-shell">
+                        <div className="practice-app-head">
+                          <strong>Sample Practice App</strong>
+                          <span>
+                            {generatedSampleQuiz.fallback
+                              ? "Fallback rendering (model output parse failed)"
+                              : "Model-generated rendering"}
+                          </span>
+                        </div>
+                        <iframe
+                          className="practice-app-frame"
+                          title="Sample Practice App"
+                          srcDoc={generatedSampleQuiz.practiceAppHtml}
+                          sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 
@@ -732,6 +811,10 @@ export default function TeacherPortalPage() {
                   <>
                     <p className="portal-subtitle">Live Generated Test Style</p>
                     <div className="prompt-box">
+                      <p>
+                        <strong>Generation:</strong>{" "}
+                        {generatedQuizPreview.fallback ? "Fallback (not true model output)" : "Model Generated"}
+                      </p>
                       <p>
                         <strong>Profile:</strong> {generatedQuizPreview.realismProfile}
                       </p>
@@ -749,6 +832,20 @@ export default function TeacherPortalPage() {
                         ))}
                       </ul>
                     </div>
+                    {generatedQuizPreview.practiceAppHtml && (
+                      <div className="practice-app-shell">
+                        <div className="practice-app-head">
+                          <strong>Realistic Test Practice App</strong>
+                          <span>Saved with this assessment</span>
+                        </div>
+                        <iframe
+                          className="practice-app-frame"
+                          title="Generated Realistic Practice App"
+                          srcDoc={generatedQuizPreview.practiceAppHtml}
+                          sandbox="allow-scripts allow-forms allow-modals allow-same-origin"
+                        />
+                      </div>
+                    )}
                   </>
                 )}
 

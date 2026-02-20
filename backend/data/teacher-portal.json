@@ -1,23 +1,174 @@
 {
   "classes": [
     {
-      "id": "class-1771569009091",
-      "name": "asd",
+      "id": "class-1771579452008",
+      "name": "Accounting",
       "status": "Active",
       "students": [],
       "assessments": [
         {
-          "id": "class-1771569009091-1771575344913",
-          "title": "Blank test",
+          "id": "class-1771579452008-1771582382297",
+          "title": "New Prompt",
+          "prompt": "I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.",
+          "keyConcepts": [
+            "C++",
+            "Programming"
+          ],
+          "files": [],
+          "generatedQuiz": {
+            "generatedAt": "2026-02-20T10:22:31.692Z",
+            "prompt": "I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.",
+            "keyConcepts": [
+              "C++",
+              "Programming"
+            ],
+            "realismProfile": "interactive-workbook-sim",
+            "caseReferences": [
+              {
+                "tag": "revenue-reconciliation",
+                "title": "Revenue Reconciliation for Mid-Market SaaS",
+                "sourceHint": "Public accounting training packs and audit simulation worksheets"
+              }
+            ],
+            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.\";\n      const keyConcepts = [\"C++\",\"Programming\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
+            "pages": [
+              {
+                "id": "gen-page-1",
+                "focusConcept": "C++",
+                "scenarioTitle": "C++ Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on C++.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of C++.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-2",
+                "focusConcept": "Programming",
+                "scenarioTitle": "Programming Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Programming.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Programming.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              }
+            ],
+            "fallback": true,
+            "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
+          },
+          "scores": []
+        },
+        {
+          "id": "class-1771579452008-1771582205499",
+          "title": "COPY",
+          "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+          "keyConcepts": [],
+          "files": [],
+          "generatedQuiz": {
+            "generatedAt": "2026-02-20T10:10:53.964Z",
+            "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+            "keyConcepts": [
+              "Statement Analysis",
+              "Error Detection",
+              "Journal Adjustments"
+            ],
+            "realismProfile": "interactive-workbook-sim",
+            "caseReferences": [
+              {
+                "tag": "revenue-reconciliation",
+                "title": "Revenue Reconciliation for Mid-Market SaaS",
+                "sourceHint": "Public accounting training packs and audit simulation worksheets"
+              },
+              {
+                "tag": "cashflow-anomalies",
+                "title": "Cashflow Anomaly Investigation in Retail Ops",
+                "sourceHint": "University accounting case studies and CPA prep scenarios"
+              }
+            ],
+            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.\";\n      const keyConcepts = [\"Statement Analysis\",\"Error Detection\",\"Journal Adjustments\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
+            "pages": [
+              {
+                "id": "gen-page-1",
+                "focusConcept": "Statement Analysis",
+                "scenarioTitle": "Statement Analysis Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Statement Analysis.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Statement Analysis.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-2",
+                "focusConcept": "Error Detection",
+                "scenarioTitle": "Error Detection Interactive Scenario",
+                "caseContext": "Cashflow Anomaly Investigation in Retail Ops",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Error Detection.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Error Detection.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-3",
+                "focusConcept": "Journal Adjustments",
+                "scenarioTitle": "Journal Adjustments Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Journal Adjustments.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Journal Adjustments.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              }
+            ],
+            "fallback": true,
+            "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
+          },
+          "scores": []
+        },
+        {
+          "id": "class-1771579452008-1771579465108",
+          "title": "Sample Test One",
           "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
           "keyConcepts": [
             "Revanue Reconciliation",
             "Ledgers"
           ],
           "files": [],
-          "scores": [],
           "generatedQuiz": {
-            "generatedAt": "2026-02-20T08:27:52.297Z",
+            "generatedAt": "2026-02-20T10:09:25.221Z",
             "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
             "keyConcepts": [
               "Revanue Reconciliation",
@@ -36,6 +187,7 @@
                 "sourceHint": "University accounting case studies and CPA prep scenarios"
               }
             ],
+            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.\";\n      const keyConcepts = [\"Revanue Reconciliation\",\"Ledgers\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
             "pages": [
               {
                 "id": "gen-page-1",
@@ -74,165 +226,163 @@
             ],
             "fallback": true,
             "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
-          }
+          },
+          "scores": []
         }
       ]
     },
     {
-      "id": "acct-101",
-      "name": "Accounting 101",
+      "id": "class-1771569009091",
+      "name": "asd",
       "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28"
-      ],
+      "students": [],
       "assessments": [
         {
-          "id": "acct-101-1771574307704",
-          "title": "Asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [],
-          "generatedQuiz": null
-        }
-      ]
-    },
-    {
-      "id": "bio-220",
-      "name": "Biology 220",
-      "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28",
-        "Student 29",
-        "Student 30",
-        "Student 31",
-        "Student 32",
-        "Student 33",
-        "Student 34"
-      ],
-      "assessments": [
-        {
-          "id": "bio-220-1771568575223",
-          "title": "asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [],
-          "generatedQuiz": null
-        },
-        {
-          "id": "bio-lab-2",
-          "title": "Cell Lab Prep",
-          "prompt": "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [],
-          "generatedQuiz": null
-        }
-      ]
-    },
-    {
-      "id": "arch-301",
-      "name": "Architecture Studio 301",
-      "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19"
-      ],
-      "assessments": [
-        {
-          "id": "arch-concept-1",
-          "title": "Concept Design Critique",
-          "prompt": "Generate a rubric-based assessment for concept sketches: spatial logic, function, materials, and clarity of presentation notes.",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [
-            {
-              "id": "score-1771569701091",
-              "studentName": "Teacher",
-              "score": 13,
-              "breakdown": [
-                {
-                  "concept": "General Understanding",
-                  "correct": 1,
-                  "total": 8
-                }
-              ],
-              "submittedAt": "2026-02-20T06:41:41.091Z"
-            }
+          "id": "class-1771569009091-1771575344913",
+          "title": "Blank test",
+          "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+          "keyConcepts": [
+            "Revanue Reconciliation",
+            "Ledgers"
           ],
-          "generatedQuiz": null
+          "files": [],
+          "scores": [],
+          "generatedQuiz": {
+            "generatedAt": "2026-02-20T09:56:07.250Z",
+            "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+            "keyConcepts": [
+              "Revanue Reconciliation",
+              "Ledgers"
+            ],
+            "realismProfile": "interactive-workbook-sim",
+            "caseReferences": [
+              {
+                "tag": "SalesJournal",
+                "title": "Sales Journal - October 2023",
+                "sourceHint": "Records all credit sales transactions for the month."
+              },
+              {
+                "tag": "BankStatement",
+                "title": "Bank Statement - October 2023",
+                "sourceHint": "Details all cash inflows and outflows through the company's bank account."
+              },
+              {
+                "tag": "ProjectLog",
+                "title": "Project Completion Log - October 2023",
+                "sourceHint": "Lists projects completed during the month, including those not yet billed."
+              },
+              {
+                "tag": "PrepaymentTracker",
+                "title": "Customer Prepayment Tracker",
+                "sourceHint": "Monitors cash received from customers for services to be rendered in future periods."
+              }
+            ],
+            "practiceAppHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Revenue Reconciliation Practice Assessment</title>\n    <style>\n        body {\n            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n            margin: 0;\n            padding: 0;\n            background-color: #f4f7f6;\n            display: flex;\n            flex-direction: column;\n            min-height: 100vh;\n        }\n        #app-header {\n            background-color: #2c3e50;\n            color: white;\n            padding: 15px 20px;\n            display: flex;\n            justify-content: space-between;\n            align-items: center;\n            box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n        }\n        #app-header h1 {\n            margin: 0;\n            font-size: 1.5em;\n        }\n        #score-display {\n            font-size: 1.2em;\n            font-weight: bold;\n        }\n        #main-container {\n            display: flex;\n            flex-grow: 1;\n            background-color: #ffffff;\n            border-radius: 8px;\n            box-shadow: 0 0 15px rgba(0,0,0,0.05);\n            margin: 20px;\n            overflow: hidden;\n        }\n        #sidebar {\n            width: 250px;\n            background-color: #ecf0f1;\n            border-right: 1px solid #ddd;\n            padding: 20px 0;\n            display: flex;\n            flex-direction: column;\n        }\n        #sidebar h3 {\n            color: #2c3e50;\n            margin: 0 20px 15px;\n            padding-bottom: 5px;\n            border-bottom: 1px solid #bdc3c7;\n        }\n        .nav-section ul {\n            list-style: none;\n            padding: 0;\n            margin: 0;\n        }\n        .nav-section li {\n            margin-bottom: 5px;\n        }\n        .nav-section button {\n            width: calc(100% - 40px);\n            padding: 10px 15px;\n            margin: 0 20px;\n            border: none;\n            background-color: transparent;\n            text-align: left;\n            cursor: pointer;\n            font-size: 0.95em;\n            color: #34495e;\n            border-radius: 4px;\n            transition: background-color 0.2s, color 0.2s;\n        }\n        .nav-section button:hover {\n            background-color: #dbe2e6;\n        }\n        .nav-section button.active {\n            background-color: #3498db;\n            color: white;\n            font-weight: bold;\n        }\n        #content-area {\n            flex-grow: 1;\n            padding: 25px;\n            display: flex;\n            flex-direction: column;\n        }\n        #current-scenario h2 {\n            color: #2c3e50;\n            font-size: 1.8em;\n            margin-top: 0;\n        }\n        #current-scenario p {\n            line-height: 1.6;\n            color: #34495e;\n            margin-bottom: 20px;\n        }\n        #workbook-data {\n            background-color: #f9fbfb;\n            border: 1px solid #e0e6ea;\n            padding: 15px;\n            border-radius: 6px;\n            margin-bottom: 25px;\n            font-family: 'Consolas', 'Courier New', monospace;\n            white-space: pre-wrap;\n            font-size: 0.9em;\n            color: #2c3e50;\n            max-height: 250px;\n            overflow-y: auto;\n        }\n        #question-section {\n            margin-top: auto; /* Push question to bottom if content is short */\n            border-top: 1px solid #eee;\n            padding-top: 20px;\n        }\n        #question-prompt {\n            font-size: 1.1em;\n            font-weight: bold;\n            color: #2c3e50;\n            margin-bottom: 15px;\n        }\n        .option-group {\n            display: flex;\n            flex-direction: column;\n        }\n        .option-item {\n            margin-bottom: 10px;\n        }\n        .option-item label {\n            display: block;\n            background-color: #f0f4f7;\n            padding: 12px 15px;\n            border-radius: 5px;\n            cursor: pointer;\n            transition: background-color 0.2s;\n            border: 1px solid #dcdfe4;\n            color: #34495e;\n        }\n        .option-item label:hover {\n            background-color: #e0e8ed;\n        }\n        .option-item input[type=\"radio\"] {\n            margin-right: 10px;\n            accent-color: #3498db;\n        }\n        .option-item.correct label {\n            background-color: #e6ffe6;\n            border-color: #4CAF50;\n        }\n        .option-item.incorrect label {\n            background-color: #ffe6e6;\n            border-color: #f44336;\n        }\n        #feedback {\n            margin-top: 15px;\n            font-weight: bold;\n            display: none;\n        }\n        #feedback.correct {\n            color: #28a745;\n        }\n        #feedback.incorrect {\n            color: #dc3545;\n        }\n        #navigation-footer {\n            padding: 15px 25px;\n            background-color: #f8f8f8;\n            border-top: 1px solid #eee;\n            display: flex;\n            justify-content: flex-end;\n        }\n        #navigation-footer button {\n            padding: 10px 25px;\n            font-size: 1em;\n            border: none;\n            border-radius: 5px;\n            cursor: pointer;\n            transition: background-color 0.2s, opacity 0.2s;\n        }\n        #next-button {\n            background-color: #3498db;\n            color: white;\n            margin-left: 10px;\n        }\n        #next-button:hover:not(:disabled) {\n            background-color: #2980b9;\n        }\n        #next-button:disabled {\n            background-color: #aeb6bf;\n            cursor: not-allowed;\n        }\n        .task-list {\n            margin-top: 20px;\n        }\n        .task-list h3 {\n            margin-top: 0;\n        }\n        .task-list ol {\n            padding-left: 20px;\n            color: #555;\n        }\n        .task-list li {\n            margin-bottom: 8px;\n        }\n        .task-list li.completed {\n            text-decoration: line-through;\n            color: #888;\n        }\n        .hint-text {\n            font-style: italic;\n            color: #777;\n            font-size: 0.9em;\n            margin-top: 5px;\n            display: block;\n        }\n    </style>\n</head>\n<body>\n    <div id=\"app-header\">\n        <h1>Revenue Reconciliation for Tech Solutions Inc.</h1>\n        <div id=\"score-display\">Score: <span id=\"current-score\">0</span> / <span id=\"total-questions\">0</span></div>\n    </div>\n\n    <div id=\"main-container\">\n        <aside id=\"sidebar\">\n            <div class=\"nav-section\">\n                <h3>Documents</h3>\n                <ul id=\"document-tabs\">\n                    <!-- Document tabs will be injected here -->\n                </ul>\n            </div>\n            <div class=\"nav-section task-list\">\n                <h3>Tasks</h3>\n                <ol id=\"task-list\">\n                    <!-- Tasks will be injected here -->\n                </ol>\n            </div>\n        </aside>\n\n        <main id=\"content-area\">\n            <section id=\"current-scenario\">\n                <h2 id=\"scenario-title\"></h2>\n                <p id=\"case-context\"></p>\n                <p id=\"task-prompt\"></p>\n                <div id=\"workbook-data\"></div>\n            </section>\n\n            <section id=\"question-section\">\n                <p id=\"question-prompt\"></p>\n                <div id=\"options-container\" class=\"option-group\">\n                    <!-- Options will be injected here -->\n                </div>\n                <div id=\"feedback\"></div>\n            </section>\n        </main>\n    </div>\n\n    <footer id=\"navigation-footer\">\n        <button id=\"next-button\" disabled>Next Question</button>\n    </footer>\n\n    <script>\n        const assessmentData = {\n          \"realismProfile\": \"interactive-workbook-sim\",\n          \"caseReferences\": [\n            {\n              \"tag\": \"SalesJournal\",\n              \"title\": \"Sales Journal - October 2023\",\n              \"sourceHint\": \"Records all credit sales transactions for the month.\"\n            },\n            {\n              \"tag\": \"BankStatement\",\n              \"title\": \"Bank Statement - October 2023\",\n              \"sourceHint\": \"Details all cash inflows and outflows through the company's bank account.\"\n            },\n            {\n              \"tag\": \"ProjectLog\",\n              \"title\": \"Project Completion Log - October 2023\",\n              \"sourceHint\": \"Lists projects completed during the month, including those not yet billed.\"\n            },\n            {\n              \"tag\": \"PrepaymentTracker\",\n              \"title\": \"Customer Prepayment Tracker\",\n              \"sourceHint\": \"Monitors cash received from customers for services to be rendered in future periods.\"\n            }\n          ],\n          \"pages\": [\n            {\n              \"id\": \"gen-page-1\",\n              \"focusConcept\": \"Gross Credit Sales from Ledger\",\n              \"scenarioTitle\": \"Reviewing October Sales Journal for Tech Solutions Inc.\",\n              \"caseContext\": \"Tech Solutions Inc. records all credit sales in its Sales Journal. As an accounting assistant, your first task for month-end close is to accurately determine the total gross credit sales made during October 2023. You will analyze the provided entries to sum up the relevant transactions.\",\n              \"taskPrompt\": \"Analyze the simulated 'Sales Journal - October 2023' displayed below to calculate the total gross credit sales for the month. Ignore any cash sales or adjustments.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"Based on the Sales Journal provided, which summarized October entries as: Invoice A-001 (Client A): $40,000; Invoice A-002 (Client B): $60,000; Invoice A-003 (Client C): $30,000; Invoice A-004 (Client D): $20,000. What is the total gross credit sales for Tech Solutions Inc. for October 2023?\",\n                \"options\": [\n                  \"$150,000\",\n                  \"$135,000\",\n                  \"$165,000\",\n                  \"$110,000\"\n                ],\n                \"correctIndex\": 0\n              }\n            },\n            {\n              \"id\": \"gen-page-2\",\n              \"focusConcept\": \"Customer Cash Receipts from Bank Statement\",\n              \"scenarioTitle\": \"Analyzing October Bank Activity for Cash Inflows\",\n              \"caseContext\": \"After reviewing the sales ledger, you need to understand the cash side of revenue. The company's bank statement for October shows various deposit transactions. Your goal is to identify and sum up only the cash receipts directly from customers that relate to revenue, distinguishing them from other types of deposits.\",\n              \"taskPrompt\": \"Examine the simulated 'Bank Statement - October 2023' below. Identify all deposits specifically marked as payments from customers and calculate their total.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"Examining the provided bank statement for Tech Solutions Inc. for October, which shows the following relevant deposits: Oct 5: Deposit (Client A Payment): $38,000; Oct 12: Deposit (Client B Payment): $55,000; Oct 20: Deposit (Client D Payment): $18,000; Oct 28: Deposit (Loan Proceeds): $10,000. What is the total amount of cash receipts *from customers* deposited during the month?\",\n                \"options\": [\n                  \"$111,000\",\n                  \"$121,000\",\n                  \"$100,000\",\n                  \"$110,000\"\n                ],\n                \"correctIndex\": 0\n              }\n            },\n            {\n              \"id\": \"gen-page-3\",\n              \"focusConcept\": \"Accrued Revenue Identification\",\n              \"scenarioTitle\": \"Identifying Unbilled Services at Month-End\",\n              \"caseContext\": \"Tech Solutions Inc. follows accrual accounting, meaning revenue must be recognized when earned, regardless of when cash is received or invoices are sent. You need to review the 'Project Completion Log' to identify services rendered in October that have been completed but not yet billed to clients.\",\n              \"taskPrompt\": \"Review the simulated 'Project Completion Log - October 2023' below. Calculate the total value of accrued revenue for October, representing services completed but not yet invoiced.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"According to the 'October Project Completion Log', the following projects were completed but not yet billed by October 31st: Project X (Client E): $8,000; Project Y (Client F): $7,000. What is the total accrued revenue that Tech Solutions Inc. has earned but not yet billed by October 31st?\",\n                \"options\": [\n                  \"$15,000\",\n                  \"$8,000\",\n                  \"$7,000\",\n                  \"$10,000\"\n                ],\n                \"correctIndex\": 0\n              }\n            },\n            {\n              \"id\": \"gen-page-4\",\n              \"focusConcept\": \"Deferred Revenue Analysis\",\n              \"scenarioTitle\": \"Assessing Customer Prepayments for Future Services\",\n              \"caseContext\": \"On the other side of accrual accounting, Tech Solutions Inc. sometimes receives cash from customers in advance for services to be provided later. This creates deferred revenue. You must examine the 'Customer Prepayment Tracker' to understand the amounts received in October that are not yet earned.\",\n              \"taskPrompt\": \"Analyze the simulated 'Customer Prepayment Tracker' below. Determine the total amount of deferred revenue (unearned revenue) as of October 31st, specifically for prepayments received in October for services not yet rendered.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"Based on the 'Customer Prepayment Tracker', Tech Solutions Inc. received the following prepayments in October for services to be rendered in November: Client G (Service Contract): $6,000; Client H (Future Project): $4,000. What is the total deferred revenue (unearned revenue) for Tech Solutions Inc. as of October 31st?\",\n                \"options\": [\n                  \"$10,000\",\n                  \"$6,000\",\n                  \"$4,000\",\n                  \"$12,000\"\n                ],\n                \"correctIndex\": 0\n              }\n            },\n            {\n              \"id\": \"gen-page-5\",\n              \"focusConcept\": \"Reconciling Revenue Discrepancies\",\n              \"scenarioTitle\": \"Explaining Differences Between Billed Sales and Cash Receipts\",\n              \"caseContext\": \"You've noticed a significant difference between the total credit sales recorded in the Sales Journal and the total cash collected from customers as per the bank statement for October. Understanding these reconciling items is crucial for accurate financial reporting.\",\n              \"taskPrompt\": \"Compare your findings from the Sales Journal and Bank Statement. Identify common accounting reasons that explain why billed sales might not match cash receipts in a given period.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"If Tech Solutions Inc.'s total credit sales (billed revenue related to October services) in October were $150,000, but only $111,000 in customer cash receipts were deposited, which of the following is the *most likely* reason for a significant portion of the $39,000 difference?\",\n                \"options\": [\n                  \"Customer prepayments for future services that haven't been earned yet.\",\n                  \"Sales returns processed for goods sold in October.\",\n                  \"Accrued revenue not yet billed at month-end.\",\n                  \"Uncollected accounts receivable at month-end for October sales.\"\n                ],\n                \"correctIndex\": 3\n              }\n            },\n            {\n              \"id\": \"gen-page-6\",\n              \"focusConcept\": \"Calculating Total Recognized Revenue\",\n              \"scenarioTitle\": \"Final Monthly Revenue Recognition for October\",\n              \"caseContext\": \"Now that all components have been analyzed—billed sales, cash receipts, accrued revenue, and deferred revenue—it's time to consolidate this information. Your final task is to calculate the total revenue Tech Solutions Inc. should recognize for October 2023, adhering to accrual accounting principles.\",\n              \"taskPrompt\": \"Synthesize all relevant information to compute the net revenue to be recognized for October 2023.\",\n              \"conceptQuestion\": {\n                \"prompt\": \"Based on your analysis for October: Total revenue from services billed and earned in October: $150,000. Services earned in October but not yet billed (accrued revenue): $15,000. Portion of cash received in September that was earned in October: $5,000. Cash received in October for services to be rendered in November (new deferred revenue): $10,000. What is the total revenue Tech Solutions Inc. should recognize for October?\",\n                \"options\": [\n                  \"$170,000\",\n                  \"$160,000\",\n                  \"$145,000\",\n                  \"$155,000\"\n                ],\n                \"correctIndex\": 0\n              }\n            }\n          ]\n        };\n\n        let currentPageIndex = 0;\n        let score = 0;\n        let userAnswers = [];\n        let currentQuestionCorrectlyAnswered = false;\n\n        const scenarioTitleEl = document.getElementById('scenario-title');\n        const caseContextEl = document.getElementById('case-context');\n        const taskPromptEl = document.getElementById('task-prompt');\n        const workbookDataEl = document.getElementById('workbook-data');\n        const questionPromptEl = document.getElementById('question-prompt');\n        const optionsContainerEl = document.getElementById('options-container');\n        const feedbackEl = document.getElementById('feedback');\n        const nextButton = document.getElementById('next-button');\n        const currentScoreEl = document.getElementById('current-score');\n        const totalQuestionsEl = document.getElementById('total-questions');\n        const documentTabsEl = document.getElementById('document-tabs');\n        const taskListEl = document.getElementById('task-list');\n\n        totalQuestionsEl.textContent = assessmentData.pages.length;\n\n        function renderPage(pageIndex) {\n            if (pageIndex >= assessmentData.pages.length) {\n                displayFinalScore();\n                return;\n            }\n\n            const page = assessmentData.pages[pageIndex];\n            scenarioTitleEl.textContent = page.scenarioTitle;\n            caseContextEl.textContent = page.caseContext;\n            taskPromptEl.textContent = page.taskPrompt;\n            workbookDataEl.innerHTML = createWorkbookDataHtml(page);\n            questionPromptEl.textContent = page.conceptQuestion.prompt;\n            renderOptions(page.conceptQuestion.options);\n            updateSidebar(pageIndex);\n\n            feedbackEl.style.display = 'none';\n            feedbackEl.className = '';\n            nextButton.disabled = true; // Disable next until answered\n            currentQuestionCorrectlyAnswered = false;\n\n            // Clear any previous selection\n            const radios = optionsContainerEl.querySelectorAll('input[type=\"radio\"]');\n            radios.forEach(radio => radio.checked = false);\n        }\n\n        function createWorkbookDataHtml(page) {\n            // This function simulates an Excel-style view based on the current page's content.\n            // In a real simulation, this would load dynamic data from a backend.\n            switch(page.id) {\n                case \"gen-page-1\":\n                    return `\n<table style=\"width:100%; border-collapse: collapse; font-size: 0.9em;\">\n    <thead style=\"background-color:#e9ecef;\">\n        <tr>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Date</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Invoice #</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Customer</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">Amount ($)</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 3</td><td style=\"border:1px solid #dee2e6; padding:8px;\">A-001</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client A</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">40,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 9</td><td style=\"border:1px solid #dee2e6; padding:8px;\">A-002</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client B</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">60,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 17</td><td style=\"border:1px solid #dee2e6; padding:8px;\">A-003</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client C</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">30,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 25</td><td style=\"border:1px solid #dee2e6; padding:8px;\">A-004</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client D</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">20,000</td></tr>\n        <tr style=\"background-color:#f8f9fa;\"><td colspan=\"3\" style=\"border:1px solid #dee2e6; padding:8px; font-weight:bold;\">TOTAL CREDIT SALES</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right; font-weight:bold;\">150,000</td></tr>\n    </tbody>\n</table>\n`;\n                case \"gen-page-2\":\n                    return `\n<table style=\"width:100%; border-collapse: collapse; font-size: 0.9em;\">\n    <thead style=\"background-color:#e9ecef;\">\n        <tr>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Date</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Description</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">Deposits ($)</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">Withdrawals ($)</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 1</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Beginning Balance</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 5</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deposit (Client A Payment)</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">38,000</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 8</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Rent Payment</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">5,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 12</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deposit (Client B Payment)</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">55,000</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 20</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deposit (Client D Payment)</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">18,000</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 24</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Payroll Expense</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">12,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 28</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deposit (Loan Proceeds)</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">10,000</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">-</td></tr>\n    </tbody>\n</table>\n`;\n                case \"gen-page-3\":\n                    return `\n<table style=\"width:100%; border-collapse: collapse; font-size: 0.9em;\">\n    <thead style=\"background-color:#e9ecef;\">\n        <tr>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Project ID</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Client</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Completion Date</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Status</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">Estimated Value ($)</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">PX-001</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client A</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 2</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Billed</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">40,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">PX-002</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client E</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 15</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Completed, Not Billed</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">8,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">PX-003</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client B</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 10</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Billed</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">60,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">PX-004</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client F</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 28</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Completed, Not Billed</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">7,000</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">PX-005</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client G</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Nov 5</td><td style=\"border:1px solid #dee2e6; padding:8px;\">In Progress</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">12,000</td></tr>\n    </tbody>\n</table>\n`;\n                case \"gen-page-4\":\n                    return `\n<table style=\"width:100%; border-collapse: collapse; font-size: 0.9em;\">\n    <thead style=\"background-color:#e9ecef;\">\n        <tr>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Date Received</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Client</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">Amount ($)</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Service Period</th>\n            <th style=\"border:1px solid #dee2e6; padding:8px; text-align:left;\">Status</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Sep 20</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client I</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">5,000</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 2023</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Earned in Oct</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 10</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client G</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">6,000</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Nov 2023</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deferred</td></tr>\n        <tr><td style=\"border:1px solid #dee2e6; padding:8px;\">Oct 22</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Client H</td><td style=\"border:1px solid #dee2e6; padding:8px; text-align:right;\">4,000</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Nov 2023</td><td style=\"border:1px solid #dee2e6; padding:8px;\">Deferred</td></tr>\n    </tbody>\n</table>\n`;\n                case \"gen-page-5\":\n                    return `\n<p><strong>Summary of October Data:</strong></p>\n<ul>\n    <li>Total Gross Credit Sales (from Sales Journal): $150,000</li>\n    <li>Total Customer Cash Receipts (from Bank Statement): $111,000</li>\n</ul>\n<p>There is a difference of $39,000. Consider why sales recorded might not immediately translate to cash received within the same month.</p>\n`;\n                case \"gen-page-6\":\n                    return `\n<p><strong>October Revenue Components:</strong></p>\n<ul>\n    <li>Total revenue from services billed and earned in October: $150,000</li>\n    <li>Services earned in October but not yet billed (accrued revenue): $15,000</li>\n    <li>Portion of cash received in September that was earned in October: $5,000</li>\n    <li>Cash received in October for services to be rendered in November (new deferred revenue): $10,000</li>\n</ul>\n<p>Calculate the total revenue to be recognized for October according to accrual accounting.</p>\n`;\n                default:\n                    return `No specific workbook data available for this page, but the context implies interaction with financial statements like ledgers, bank statements, and reports.`;\n            }\n        }\n\n        function renderOptions(options) {\n            optionsContainerEl.innerHTML = '';\n            options.forEach((option, index) => {\n                const optionItem = document.createElement('div');\n                optionItem.classList.add('option-item');\n                optionItem.innerHTML = `\n                    <label>\n                        <input type=\"radio\" name=\"question-option\" value=\"${index}\">\n                        ${option}\n                    </label>\n                `;\n                optionItem.querySelector('input').addEventListener('change', () => handleAnswer(index));\n                optionsContainerEl.appendChild(optionItem);\n            });\n        }\n\n        function handleAnswer(selectedIndex) {\n            if (currentQuestionCorrectlyAnswered) return; // Prevent re-answering\n\n            const currentPage = assessmentData.pages[currentPageIndex];\n            const correctIndex = currentPage.conceptQuestion.correctIndex;\n            const isCorrect = (selectedIndex === correctIndex);\n\n            // Visual feedback\n            const options = optionsContainerEl.querySelectorAll('.option-item');\n            options.forEach((option, idx) => {\n                option.classList.remove('correct', 'incorrect');\n                option.querySelector('input').disabled = true; // Disable all radios after selection\n                if (idx === correctIndex) {\n                    option.classList.add('correct');\n                } else if (idx === selectedIndex && !isCorrect) {\n                    option.classList.add('incorrect');\n                }\n            });\n\n            feedbackEl.style.display = 'block';\n            if (isCorrect) {\n                feedbackEl.textContent = 'Correct!';\n                feedbackEl.classList.add('correct');\n                score++;\n                currentQuestionCorrectlyAnswered = true;\n            } else {\n                feedbackEl.textContent = 'Incorrect. The correct answer is highlighted.';\n                feedbackEl.classList.add('incorrect');\n            }\n            currentScoreEl.textContent = score;\n\n            userAnswers[currentPageIndex] = { selected: selectedIndex, correct: isCorrect };\n            nextButton.disabled = false;\n            updateSidebar(currentPageIndex);\n        }\n\n        function updateSidebar(currentPageIndex) {\n            documentTabsEl.innerHTML = '';\n            taskListEl.innerHTML = '';\n\n            assessmentData.caseReferences.forEach((ref, index) => {\n                const li = document.createElement('li');\n                const button = document.createElement('button');\n                button.textContent = ref.title;\n                // For a real app, this would dynamically load the document content.\n                // Here, it's just for navigation appearance.\n                button.onclick = () => alert('Document: ' + ref.title + '\\nHint: ' + ref.sourceHint);\n                li.appendChild(button);\n                documentTabsEl.appendChild(li);\n            });\n\n            assessmentData.pages.forEach((page, index) => {\n                const li = document.createElement('li');\n                li.textContent = `Task ${index + 1}: ${page.focusConcept}`;\n                if (index === currentPageIndex) {\n                    li.classList.add('active');\n                }\n                if (userAnswers[index] && userAnswers[index].correct) {\n                    li.classList.add('completed');\n                }\n                taskListEl.appendChild(li);\n            });\n\n            // Highlight current document if it's tied to the page's focus concept or scenario\n            const currentRefTag = assessmentData.pages[currentPageIndex].id.includes('1') ? 'SalesJournal' :\n                                  assessmentData.pages[currentPageIndex].id.includes('2') ? 'BankStatement' :\n                                  assessmentData.pages[currentPageIndex].id.includes('3') ? 'ProjectLog' :\n                                  assessmentData.pages[currentPageIndex].id.includes('4') ? 'PrepaymentTracker' : null;\n\n            Array.from(documentTabsEl.children).forEach(item => {\n                const button = item.querySelector('button');\n                const ref = assessmentData.caseReferences.find(r => r.title === button.textContent);\n                if (ref && ref.tag === currentRefTag) {\n                    button.classList.add('active');\n                } else {\n                    button.classList.remove('active');\n                }\n            });\n        }\n\n        async function mockApiCall(data) {\n            console.log(\"Mock API POST /api/student/live-question body:\", JSON.stringify(data, null, 2));\n            // Simulate network delay\n            await new Promise(resolve => setTimeout(resolve, 500));\n\n            const nextPage = assessmentData.pages[data.userState.currentPageIndex + 1];\n            if (nextPage) {\n                return {\n                    question: nextPage.conceptQuestion,\n                    userState: { ...data.userState, currentPageIndex: data.userState.currentPageIndex + 1, score: score }\n                };\n            } else {\n                return { question: null, userState: { ...data.userState, completed: true, score: score } };\n            }\n        }\n\n        nextButton.addEventListener('click', async () => {\n            currentPageIndex++;\n            if (currentPageIndex < assessmentData.pages.length) {\n                const postBody = {\n                    assessmentTitle: \"Revenue Reconciliation for Tech Solutions Inc.\",\n                    teacherPrompt: \"generate a quiz for accounting students. this should be testing revenue reconciliation. Make sure they can interact with ledgers, bank statements, and other financial statements. This should be in an excel style format.\",\n                    keyConcepts: [\"Revenue Reconciliation\", \"Ledgers\"],\n                    focusConcept: assessmentData.pages[currentPageIndex - 1].focusConcept, // Concept of the *just answered* page\n                    userState: {\n                        currentPageIndex: currentPageIndex - 1, // Index of the page just completed\n                        score: score,\n                        lastAnswerCorrect: userAnswers[currentPageIndex - 1].correct,\n                        history: userAnswers.map(ans => ({ pageId: assessmentData.pages[ans.pageIndex].id, correct: ans.correct })) // Assuming userAnswers stores pageIndex now\n                    }\n                };\n                \n                // Modify userState to include the current page index for the next question fetch\n                postBody.userState.currentPageIndex = currentPageIndex;\n                const apiResponse = await mockApiCall(postBody);\n                if (apiResponse && apiResponse.question) {\n                    // In a true adaptive system, apiResponse.question would be the *new* question\n                    // For this simulation, we proceed to the next pre-defined page.\n                    renderPage(currentPageIndex);\n                } else {\n                    displayFinalScore();\n                }\n            } else {\n                displayFinalScore();\n            }\n        });\n\n        function displayFinalScore() {\n            contentArea.innerHTML = `\n                <div style=\"text-align: center; margin-top: 50px;\">\n                    <h2>Assessment Complete!</h2>\n                    <p>You have finished the Revenue Reconciliation practice assessment.</p>\n                    <p style=\"font-size: 1.5em; font-weight: bold;\">Your final score: ${score} out of ${assessmentData.pages.length}</p>\n                    <p>Review your task list on the left to see which concepts you mastered.</p>\n                </div>\n            `;\n            nextButton.style.display = 'none';\n            feedbackEl.style.display = 'none';\n        }\n\n        // Initialize the first page\n        document.addEventListener('DOMContentLoaded', () => {\n            renderPage(currentPageIndex);\n        });\n    </script>\n</body>\n</html>\n",
+            "pages": [
+              {
+                "id": "gen-page-1",
+                "focusConcept": "Gross Credit Sales from Ledger",
+                "scenarioTitle": "Reviewing October Sales Journal for Tech Solutions Inc.",
+                "caseContext": "Tech Solutions Inc. records all credit sales in its Sales Journal. As an accounting assistant, your first task for month-end close is to accurately determine the total gross credit sales made during October 2023. You will analyze the provided entries to sum up the relevant transactions.",
+                "taskPrompt": "Analyze the simulated 'Sales Journal - October 2023' displayed below to calculate the total gross credit sales for the month. Ignore any cash sales or adjustments.",
+                "conceptQuestion": {
+                  "prompt": "Based on the Sales Journal provided, which summarized October entries as: Invoice A-001 (Client A): $40,000; Invoice A-002 (Client B): $60,000; Invoice A-003 (Client C): $30,000; Invoice A-004 (Client D): $20,000. What is the total gross credit sales for Tech Solutions Inc. for October 2023?",
+                  "options": [
+                    "$150,000",
+                    "$135,000",
+                    "$165,000",
+                    "$110,000"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-2",
+                "focusConcept": "Customer Cash Receipts from Bank Statement",
+                "scenarioTitle": "Analyzing October Bank Activity for Cash Inflows",
+                "caseContext": "After reviewing the sales ledger, you need to understand the cash side of revenue. The company's bank statement for October shows various deposit transactions. Your goal is to identify and sum up only the cash receipts directly from customers that relate to revenue, distinguishing them from other types of deposits.",
+                "taskPrompt": "Examine the simulated 'Bank Statement - October 2023' below. Identify all deposits specifically marked as payments from customers and calculate their total.",
+                "conceptQuestion": {
+                  "prompt": "Examining the provided bank statement for Tech Solutions Inc. for October, which shows the following relevant deposits: Oct 5: Deposit (Client A Payment): $38,000; Oct 12: Deposit (Client B Payment): $55,000; Oct 20: Deposit (Client D Payment): $18,000; Oct 28: Deposit (Loan Proceeds): $10,000. What is the total amount of cash receipts *from customers* deposited during the month?",
+                  "options": [
+                    "$111,000",
+                    "$121,000",
+                    "$100,000",
+                    "$110,000"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-3",
+                "focusConcept": "Accrued Revenue Identification",
+                "scenarioTitle": "Identifying Unbilled Services at Month-End",
+                "caseContext": "Tech Solutions Inc. follows accrual accounting, meaning revenue must be recognized when earned, regardless of when cash is received or invoices are sent. You need to review the 'Project Completion Log' to identify services rendered in October that have been completed but not yet billed to clients.",
+                "taskPrompt": "Review the simulated 'Project Completion Log - October 2023' below. Calculate the total value of accrued revenue for October, representing services completed but not yet invoiced.",
+                "conceptQuestion": {
+                  "prompt": "According to the 'October Project Completion Log', the following projects were completed but not yet billed by October 31st: Project X (Client E): $8,000; Project Y (Client F): $7,000. What is the total accrued revenue that Tech Solutions Inc. has earned but not yet billed by October 31st?",
+                  "options": [
+                    "$15,000",
+                    "$8,000",
+                    "$7,000",
+                    "$10,000"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-4",
+                "focusConcept": "Deferred Revenue Analysis",
+                "scenarioTitle": "Assessing Customer Prepayments for Future Services",
+                "caseContext": "On the other side of accrual accounting, Tech Solutions Inc. sometimes receives cash from customers in advance for services to be provided later. This creates deferred revenue. You must examine the 'Customer Prepayment Tracker' to understand the amounts received in October that are not yet earned.",
+                "taskPrompt": "Analyze the simulated 'Customer Prepayment Tracker' below. Determine the total amount of deferred revenue (unearned revenue) as of October 31st, specifically for prepayments received in October for services not yet rendered.",
+                "conceptQuestion": {
+                  "prompt": "Based on the 'Customer Prepayment Tracker', Tech Solutions Inc. received the following prepayments in October for services to be rendered in November: Client G (Service Contract): $6,000; Client H (Future Project): $4,000. What is the total deferred revenue (unearned revenue) for Tech Solutions Inc. as of October 31st?",
+                  "options": [
+                    "$10,000",
+                    "$6,000",
+                    "$4,000",
+                    "$12,000"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-5",
+                "focusConcept": "Reconciling Revenue Discrepancies",
+                "scenarioTitle": "Explaining Differences Between Billed Sales and Cash Receipts",
+                "caseContext": "You've noticed a significant difference between the total credit sales recorded in the Sales Journal and the total cash collected from customers as per the bank statement for October. Understanding these reconciling items is crucial for accurate financial reporting.",
+                "taskPrompt": "Compare your findings from the Sales Journal and Bank Statement. Identify common accounting reasons that explain why billed sales might not match cash receipts in a given period.",
+                "conceptQuestion": {
+                  "prompt": "If Tech Solutions Inc.'s total credit sales (billed revenue related to October services) in October were $150,000, but only $111,000 in customer cash receipts were deposited, which of the following is the *most likely* reason for a significant portion of the $39,000 difference?",
+                  "options": [
+                    "Customer prepayments for future services that haven't been earned yet.",
+                    "Sales returns processed for goods sold in October.",
+                    "Accrued revenue not yet billed at month-end.",
+                    "Uncollected accounts receivable at month-end for October sales."
+                  ],
+                  "correctIndex": 3
+                }
+              },
+              {
+                "id": "gen-page-6",
+                "focusConcept": "Calculating Total Recognized Revenue",
+                "scenarioTitle": "Final Monthly Revenue Recognition for October",
+                "caseContext": "Now that all components have been analyzed—billed sales, cash receipts, accrued revenue, and deferred revenue—it's time to consolidate this information. Your final task is to calculate the total revenue Tech Solutions Inc. should recognize for October 2023, adhering to accrual accounting principles.",
+                "taskPrompt": "Synthesize all relevant information to compute the net revenue to be recognized for October 2023.",
+                "conceptQuestion": {
+                  "prompt": "Based on your analysis for October: Total revenue from services billed and earned in October: $150,000. Services earned in October but not yet billed (accrued revenue): $15,000. Portion of cash received in September that was earned in October: $5,000. Cash received in October for services to be rendered in November (new deferred revenue): $10,000. What is the total revenue Tech Solutions Inc. should recognize for October?",
+                  "options": [
+                    "$170,000",
+                    "$160,000",
+                    "$145,000",
+                    "$155,000"
+                  ],
+                  "correctIndex": 0
+                }
+              }
+            ]
+          }
         }
       ]
     }
