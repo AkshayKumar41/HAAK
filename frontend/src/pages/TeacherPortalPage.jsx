@@ -22,6 +22,7 @@ export default function TeacherPortalPage() {
   const [editKeyConcepts, setEditKeyConcepts] = useState([]);
   const [newKeyConcept, setNewKeyConcept] = useState("");
   const [editFiles, setEditFiles] = useState([]);
+  const [generatedQuizPreview, setGeneratedQuizPreview] = useState(null);
   const [generatedSample, setGeneratedSample] = useState("");
   const [editClassName, setEditClassName] = useState("");
   const [editClassStatus, setEditClassStatus] = useState("Active");
@@ -79,6 +80,7 @@ export default function TeacherPortalPage() {
       setEditPrompt(selectedAssessment.prompt);
       setEditKeyConcepts(Array.isArray(selectedAssessment.keyConcepts) ? selectedAssessment.keyConcepts : []);
       setEditFiles(Array.isArray(selectedAssessment.files) ? selectedAssessment.files : []);
+      setGeneratedQuizPreview(selectedAssessment.generatedQuiz || null);
       setNewKeyConcept("");
       setGeneratedSample("");
     }
@@ -259,6 +261,48 @@ export default function TeacherPortalPage() {
                 ...classItem,
                 assessments: classItem.assessments.map((assessment) =>
                   assessment.id === data.id ? data : assessment
+                ),
+              }
+        )
+      );
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function generateLiveQuiz() {
+    if (!selectedClass || !selectedAssessment) return;
+
+    setIsSaving(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `/api/teacher/classes/${selectedClass.id}/assessments/${selectedAssessment.id}/generate-live-quiz`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: editPrompt,
+            keyConcepts: editKeyConcepts.map((item) => item.trim()).filter(Boolean),
+          }),
+        }
+      );
+      const generated = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(generated?.error || "Failed to generate live quiz");
+
+      setGeneratedQuizPreview(generated);
+      setClasses((prev) =>
+        prev.map((classItem) =>
+          classItem.id !== selectedClass.id
+            ? classItem
+            : {
+                ...classItem,
+                assessments: classItem.assessments.map((assessment) =>
+                  assessment.id === selectedAssessment.id
+                    ? { ...assessment, generatedQuiz: generated }
+                    : assessment
                 ),
               }
         )
@@ -656,6 +700,9 @@ export default function TeacherPortalPage() {
                   <button type="button" className="btn btn-danger" onClick={deleteAssessment} disabled={isSaving}>
                     Delete
                   </button>
+                  <button type="button" className="btn btn-ghost" onClick={generateLiveQuiz} disabled={isSaving}>
+                    Generate Realistic Test
+                  </button>
                   <button
                     type="button"
                     className="btn btn-ghost"
@@ -678,6 +725,30 @@ export default function TeacherPortalPage() {
                   <>
                     <p className="portal-subtitle">Sample Generated Test (Fake AI Output)</p>
                     <pre className="prompt-box">{generatedSample}</pre>
+                  </>
+                )}
+
+                {generatedQuizPreview && (
+                  <>
+                    <p className="portal-subtitle">Live Generated Test Style</p>
+                    <div className="prompt-box">
+                      <p>
+                        <strong>Profile:</strong> {generatedQuizPreview.realismProfile}
+                      </p>
+                      <p>
+                        <strong>Pages:</strong> {(generatedQuizPreview.pages || []).length}
+                      </p>
+                      <p>
+                        <strong>Case References:</strong>
+                      </p>
+                      <ul>
+                        {(generatedQuizPreview.caseReferences || []).map((ref) => (
+                          <li key={ref.tag}>
+                            {ref.title} ({ref.sourceHint})
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </>
                 )}
 

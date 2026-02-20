@@ -5,7 +5,78 @@
       "name": "asd",
       "status": "Active",
       "students": [],
-      "assessments": []
+      "assessments": [
+        {
+          "id": "class-1771569009091-1771575344913",
+          "title": "Blank test",
+          "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+          "keyConcepts": [
+            "Revanue Reconciliation",
+            "Ledgers"
+          ],
+          "files": [],
+          "scores": [],
+          "generatedQuiz": {
+            "generatedAt": "2026-02-20T08:27:52.297Z",
+            "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+            "keyConcepts": [
+              "Revanue Reconciliation",
+              "Ledgers"
+            ],
+            "realismProfile": "interactive-workbook-sim",
+            "caseReferences": [
+              {
+                "tag": "revenue-reconciliation",
+                "title": "Revenue Reconciliation for Mid-Market SaaS",
+                "sourceHint": "Public accounting training packs and audit simulation worksheets"
+              },
+              {
+                "tag": "cashflow-anomalies",
+                "title": "Cashflow Anomaly Investigation in Retail Ops",
+                "sourceHint": "University accounting case studies and CPA prep scenarios"
+              }
+            ],
+            "pages": [
+              {
+                "id": "gen-page-1",
+                "focusConcept": "Revanue Reconciliation",
+                "scenarioTitle": "Revanue Reconciliation Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Revanue Reconciliation.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Revanue Reconciliation.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-2",
+                "focusConcept": "Ledgers",
+                "scenarioTitle": "Ledgers Interactive Scenario",
+                "caseContext": "Cashflow Anomaly Investigation in Retail Ops",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Ledgers.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Ledgers.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              }
+            ],
+            "fallback": true,
+            "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
+          }
+        }
+      ]
     },
     {
       "id": "acct-101",
@@ -43,45 +114,13 @@
       ],
       "assessments": [
         {
-          "id": "acct-101-1771568885539",
-          "title": "aa",
-          "prompt": "aa",
-          "keyConcepts": [
-            "a",
-            "a"
-          ],
-          "files": [],
-          "scores": [
-            {
-              "id": "score-1771569730849",
-              "studentName": "Teacher",
-              "score": 25,
-              "breakdown": [
-                {
-                  "concept": "a",
-                  "correct": 2,
-                  "total": 8
-                }
-              ],
-              "submittedAt": "2026-02-20T06:42:10.849Z"
-            }
-          ]
-        },
-        {
-          "id": "acct-101-1771568610543",
-          "title": "num 2",
-          "prompt": "2",
-          "keyConcepts": [],
-          "files": [],
-          "scores": []
-        },
-        {
-          "id": "acct-101-1771567320783",
-          "title": "asd",
+          "id": "acct-101-1771574307704",
+          "title": "Asd",
           "prompt": "asd",
           "keyConcepts": [],
           "files": [],
-          "scores": []
+          "scores": [],
+          "generatedQuiz": null
         }
       ]
     },
@@ -132,7 +171,8 @@
           "prompt": "asd",
           "keyConcepts": [],
           "files": [],
-          "scores": []
+          "scores": [],
+          "generatedQuiz": null
         },
         {
           "id": "bio-lab-2",
@@ -140,7 +180,8 @@
           "prompt": "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
           "keyConcepts": [],
           "files": [],
-          "scores": []
+          "scores": [],
+          "generatedQuiz": null
         }
       ]
     },
@@ -190,7 +231,8 @@
               ],
               "submittedAt": "2026-02-20T06:41:41.091Z"
             }
-          ]
+          ],
+          "generatedQuiz": null
         }
       ]
     }
