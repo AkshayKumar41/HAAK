@@ -52,11 +52,11 @@ export default function HomePage() {
               Turn lesson plans into guided, real-world scenarios where students build understanding with confidence.
             </p>
             <div className="hero-actions">
-              <Link to="/login" className="btn btn-primary">
+              <Link to="/login?role=student" className="btn btn-primary">
                 Start as Student
               </Link>
-              <Link to="/login" className="btn btn-ghost">
-                Start as Institution
+              <Link to="/login?role=teacher" className="btn btn-ghost">
+                Start as Instructor
               </Link>
             </div>
           </div>

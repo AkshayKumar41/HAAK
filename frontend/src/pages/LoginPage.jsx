@@ -1,10 +1,18 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [role, setRole] = useState("student");
   const [identity, setIdentity] = useState("");
+
+  useEffect(() => {
+    const requestedRole = searchParams.get("role");
+    if (requestedRole === "student" || requestedRole === "teacher") {
+      setRole(requestedRole);
+    }
+  }, [searchParams]);
 
   function handleSubmit(e) {
     e.preventDefault();

@@ -44,11 +44,6 @@ export default function StudentPortalPage() {
     loadClasses();
   }, []);
 
-  function logout() {
-    localStorage.removeItem("IntuMotion_role");
-    navigate("/login");
-  }
-
   function openTest(mode) {
     if (!selectedClass || !selectedAssessment) return;
     navigate(`/student/classes/${selectedClass.id}/assessments/${selectedAssessment.id}/${mode}`);
@@ -69,9 +64,14 @@ export default function StudentPortalPage() {
           <Link to="/" className="nav-cta">
             Home
           </Link>
-          <button type="button" className="btn btn-ghost" onClick={logout}>
-            Log Out
-          </button>
+          <Link to="/student/profile" className="teacher-icon-btn" aria-label="My Profile">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 12a4.75 4.75 0 1 0-4.75-4.75A4.76 4.76 0 0 0 12 12zm0 2c-3.7 0-7 1.89-7 4.2V20h14v-1.8c0-2.31-3.3-4.2-7-4.2z"
+              />
+            </svg>
+          </Link>
         </nav>
       </header>
 
@@ -125,8 +125,6 @@ export default function StudentPortalPage() {
             {selectedAssessment ? (
               <>
                 <h3>{selectedAssessment.title}</h3>
-                <p className="portal-subtitle">Assessment Prompt</p>
-                <pre className="prompt-box">{selectedAssessment.prompt}</pre>
 
                 <p className="portal-subtitle">Key Concepts</p>
                 <div className="file-list">
