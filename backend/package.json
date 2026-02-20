@@ -8,11 +8,15 @@
   },
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:db": "node scripts/seedFromJsonToDatabase.js",
+    "seed:postgres": "STORAGE_DRIVER=postgres node scripts/seedFromJsonToDatabase.js",
+    "seed:mysql": "STORAGE_DRIVER=mysql node scripts/seedFromJsonToDatabase.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "mysql2": "^3.17.4"
   }
 }

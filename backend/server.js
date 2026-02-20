@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { createTeacherStore } from "./teacherStore.js";
 import { LIVE_QUIZ_SYSTEM_PROMPT, buildLiveQuizUserPrompt } from "./prompts/liveQuizPrompts.js";
 
 dotenv.config();
@@ -18,128 +16,18 @@ const BASE = `https://inference.generativeai.${REGION}.oci.oraclecloud.com/20231
 const KEY = process.env.OCI_GENAI_API_KEY;
 const DEFAULT_MODEL = process.env.OCI_MODEL || "meta.llama-3.3-70b-instruct";
 const LIVE_QUIZ_MODEL = process.env.OCI_LIVE_QUIZ_MODEL || DEFAULT_MODEL;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const DATA_DIR = join(__dirname, "data");
-const TEACHER_DB_PATH = join(DATA_DIR, "teacher-portal.json");
-
-const defaultTeacherData = {
-  classes: [
-    {
-      id: "acct-101",
-      name: "Accounting 101",
-      status: "Active",
-      students: ["Ava Kim", "Noah Patel", "Ethan Cruz", "Mia Brooks"],
-      assessments: [
-        {
-          id: "acct-midterm-1",
-          title: "Midterm Review Quiz",
-          prompt:
-            "Create a 12-question mixed-format assessment on journal entries, trial balances, and adjusting entries. Include 2 short scenarios and answer key guidance.",
-          keyConcepts: ["Accuracy > 80%", "Completes in 30 mins"],
-          files: [],
-          scores: [],
-          generatedQuiz: null,
-        },
-        {
-          id: "acct-practice-1",
-          title: "Reconciliation Practice",
-          prompt:
-            "Build a practical office reconciliation assessment with a fictional ledger mismatch. Students must identify 3 errors and explain correction steps.",
-          keyConcepts: ["Error detection quality", "Correction clarity"],
-          files: [],
-          scores: [],
-          generatedQuiz: null,
-        },
-      ],
-    },
-    {
-      id: "bio-220",
-      name: "Biology 220",
-      status: "Active",
-      students: ["Liam Ortiz", "Sophia Chen", "Mason Reed"],
-      assessments: [
-        {
-          id: "bio-lab-2",
-          title: "Cell Lab Prep",
-          prompt:
-            "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
-          keyConcepts: ["Safety adherence", "Vocabulary mastery"],
-          files: [],
-          scores: [],
-          generatedQuiz: null,
-        },
-      ],
-    },
-    {
-      id: "arch-301",
-      name: "Architecture Studio 301",
-      status: "Active",
-      students: ["Isla Carter", "Lucas Nguyen", "Elena Rossi"],
-      assessments: [
-        {
-          id: "arch-concept-1",
-          title: "Concept Design Critique",
-          prompt:
-            "Generate a rubric-based assessment for concept sketches: spatial logic, function, materials, and clarity of presentation notes.",
-          keyConcepts: ["Design rationale", "Functional clarity"],
-          files: [],
-          scores: [],
-          generatedQuiz: null,
-        },
-      ],
-    },
-  ],
-};
+const teacherStore = createTeacherStore();
 
 if (!KEY) {
   console.warn("OCI_GENAI_API_KEY is missing. /api/chat will be disabled until key is set.");
 }
 
-async function ensureTeacherDb() {
-  await mkdir(DATA_DIR, { recursive: true });
-  try {
-    await readFile(TEACHER_DB_PATH, "utf8");
-  } catch {
-    await writeFile(TEACHER_DB_PATH, JSON.stringify(defaultTeacherData, null, 2));
-  }
-}
-
 async function readTeacherDb() {
-  await ensureTeacherDb();
-  const raw = await readFile(TEACHER_DB_PATH, "utf8");
-  const parsed = JSON.parse(raw);
-
-  // Backward-compatible normalization for older local data shape.
-  parsed.classes = (parsed.classes || []).map((classItem) => {
-    const normalizedStudents = Array.isArray(classItem.students)
-      ? classItem.students
-      : Array.from({ length: Number(classItem.students || 0) }, (_, i) => `Student ${i + 1}`);
-
-    const normalizedAssessments = (classItem.assessments || []).map((assessment) => ({
-      ...assessment,
-      keyConcepts: Array.isArray(assessment.keyConcepts)
-        ? assessment.keyConcepts
-        : Array.isArray(assessment.kpis)
-          ? assessment.kpis
-          : [],
-      files: Array.isArray(assessment.files) ? assessment.files : [],
-      scores: Array.isArray(assessment.scores) ? assessment.scores : [],
-      generatedQuiz: assessment.generatedQuiz || null,
-    }));
-
-    return {
-      ...classItem,
-      students: normalizedStudents,
-      assessments: normalizedAssessments,
-    };
-  });
-
-  return parsed;
+  return teacherStore.read();
 }
 
 async function writeTeacherDb(data) {
-  await writeFile(TEACHER_DB_PATH, JSON.stringify(data, null, 2));
+  await teacherStore.write(data);
 }
 
 function extractJsonObject(text) {
@@ -458,7 +346,13 @@ function buildFallbackLiveQuestion({ focusConcept }) {
 }
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, region: REGION, model: DEFAULT_MODEL, chatReady: Boolean(KEY) });
+  res.json({
+    ok: true,
+    region: REGION,
+    model: DEFAULT_MODEL,
+    chatReady: Boolean(KEY),
+    storage: teacherStore.type,
+  });
 });
 
 app.get("/api/teacher/classes", async (_req, res) => {
@@ -841,6 +735,9 @@ app.post("/api/chat", async (req, res) => {
     return res.status(500).json({ error: String(e) });
   }
 });
+
+await teacherStore.init();
+console.log(`Teacher storage: ${teacherStore.type}`);
 
 app.listen(PORT, () => {
   console.log(`Backend on http://localhost:${PORT}`);
