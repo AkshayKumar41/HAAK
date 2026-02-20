@@ -7,79 +7,13 @@
       "students": [],
       "assessments": [
         {
-          "id": "class-1771579452008-1771582382297",
-          "title": "New Prompt",
-          "prompt": "I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.",
-          "keyConcepts": [
-            "C++",
-            "Programming"
-          ],
-          "files": [],
-          "generatedQuiz": {
-            "generatedAt": "2026-02-20T10:22:31.692Z",
-            "prompt": "I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.",
-            "keyConcepts": [
-              "C++",
-              "Programming"
-            ],
-            "realismProfile": "interactive-workbook-sim",
-            "caseReferences": [
-              {
-                "tag": "revenue-reconciliation",
-                "title": "Revenue Reconciliation for Mid-Market SaaS",
-                "sourceHint": "Public accounting training packs and audit simulation worksheets"
-              }
-            ],
-            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"I want to assess my students on their programming abilities. Can you create a test where the students are tested on basic C++ Programming via text boxes where they have to fill in the right answers.\";\n      const keyConcepts = [\"C++\",\"Programming\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
-            "pages": [
-              {
-                "id": "gen-page-1",
-                "focusConcept": "C++",
-                "scenarioTitle": "C++ Interactive Scenario",
-                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on C++.",
-                "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of C++.",
-                  "options": [
-                    "Use evidence from statements and ledger to justify each adjustment",
-                    "Skip checks and use a shortcut",
-                    "Prioritize speed over correctness",
-                    "Ignore conflicting entries"
-                  ],
-                  "correctIndex": 0
-                }
-              },
-              {
-                "id": "gen-page-2",
-                "focusConcept": "Programming",
-                "scenarioTitle": "Programming Interactive Scenario",
-                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Programming.",
-                "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of Programming.",
-                  "options": [
-                    "Use evidence from statements and ledger to justify each adjustment",
-                    "Skip checks and use a shortcut",
-                    "Prioritize speed over correctness",
-                    "Ignore conflicting entries"
-                  ],
-                  "correctIndex": 0
-                }
-              }
-            ],
-            "fallback": true,
-            "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
-          },
-          "scores": []
-        },
-        {
-          "id": "class-1771579452008-1771582205499",
-          "title": "COPY",
+          "id": "class-1771579452008-1771582895754",
+          "title": "Quiz",
           "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
           "keyConcepts": [],
           "files": [],
           "generatedQuiz": {
-            "generatedAt": "2026-02-20T10:10:53.964Z",
+            "generatedAt": "2026-02-20T10:23:29.659Z",
             "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
             "keyConcepts": [
               "Statement Analysis",
@@ -143,77 +77,6 @@
                 "taskPrompt": "Interact with the workbook files and complete all tasks focused on Journal Adjustments.",
                 "conceptQuestion": {
                   "prompt": "Select the best action that demonstrates mastery of Journal Adjustments.",
-                  "options": [
-                    "Use evidence from statements and ledger to justify each adjustment",
-                    "Skip checks and use a shortcut",
-                    "Prioritize speed over correctness",
-                    "Ignore conflicting entries"
-                  ],
-                  "correctIndex": 0
-                }
-              }
-            ],
-            "fallback": true,
-            "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
-          },
-          "scores": []
-        },
-        {
-          "id": "class-1771579452008-1771579465108",
-          "title": "Sample Test One",
-          "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
-          "keyConcepts": [
-            "Revanue Reconciliation",
-            "Ledgers"
-          ],
-          "files": [],
-          "generatedQuiz": {
-            "generatedAt": "2026-02-20T10:09:25.221Z",
-            "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
-            "keyConcepts": [
-              "Revanue Reconciliation",
-              "Ledgers"
-            ],
-            "realismProfile": "interactive-workbook-sim",
-            "caseReferences": [
-              {
-                "tag": "revenue-reconciliation",
-                "title": "Revenue Reconciliation for Mid-Market SaaS",
-                "sourceHint": "Public accounting training packs and audit simulation worksheets"
-              },
-              {
-                "tag": "cashflow-anomalies",
-                "title": "Cashflow Anomaly Investigation in Retail Ops",
-                "sourceHint": "University accounting case studies and CPA prep scenarios"
-              }
-            ],
-            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.\";\n      const keyConcepts = [\"Revanue Reconciliation\",\"Ledgers\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
-            "pages": [
-              {
-                "id": "gen-page-1",
-                "focusConcept": "Revanue Reconciliation",
-                "scenarioTitle": "Revanue Reconciliation Interactive Scenario",
-                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Revanue Reconciliation.",
-                "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of Revanue Reconciliation.",
-                  "options": [
-                    "Use evidence from statements and ledger to justify each adjustment",
-                    "Skip checks and use a shortcut",
-                    "Prioritize speed over correctness",
-                    "Ignore conflicting entries"
-                  ],
-                  "correctIndex": 0
-                }
-              },
-              {
-                "id": "gen-page-2",
-                "focusConcept": "Ledgers",
-                "scenarioTitle": "Ledgers Interactive Scenario",
-                "caseContext": "Cashflow Anomaly Investigation in Retail Ops",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Ledgers.",
-                "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of Ledgers.",
                   "options": [
                     "Use evidence from statements and ledger to justify each adjustment",
                     "Skip checks and use a shortcut",
