@@ -442,7 +442,7 @@ export default function TeacherPortalPage() {
       <header className="site-header reveal">
         <Link className="brand" to="/">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
           <Link to="/" className="nav-cta">

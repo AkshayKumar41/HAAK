@@ -21,10 +21,10 @@ function currency(value) {
 }
 
 function getStudentName() {
-  const saved = localStorage.getItem("intumotion_profile_name") || "";
+  const saved = localStorage.getItem("IntuMotion_profile_name") || "";
   if (saved) return saved;
 
-  const identity = localStorage.getItem("intumotion_identity") || "";
+  const identity = localStorage.getItem("IntuMotion_identity") || "";
   if (identity.includes("@")) return identity.split("@")[0] || "Student";
   return identity || "Student";
 }
@@ -664,7 +664,7 @@ export default function StudentTestPage() {
       <header className="site-header reveal">
         <Link className="brand" to="/student">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
           <button type="button" className="btn btn-ghost" onClick={() => navigate("/student")}>

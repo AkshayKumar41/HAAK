@@ -14,15 +14,15 @@ function parseIdentity(identity) {
 export default function TeacherProfilePage() {
   const navigate = useNavigate();
   const initial = useMemo(() => {
-    const storedName = localStorage.getItem("intumotion_profile_name") || "";
-    const storedEmail = localStorage.getItem("intumotion_profile_email") || "";
-    const loginIdentity = localStorage.getItem("intumotion_identity") || "";
+    const storedName = localStorage.getItem("IntuMotion_profile_name") || "";
+    const storedEmail = localStorage.getItem("IntuMotion_profile_email") || "";
+    const loginIdentity = localStorage.getItem("IntuMotion_identity") || "";
     const parsed = parseIdentity(loginIdentity);
 
     return {
       name: storedName || parsed.name || "Teacher",
       email: storedEmail || parsed.email || "",
-      institution: localStorage.getItem("intumotion_profile_institution") || "",
+      institution: localStorage.getItem("IntuMotion_profile_institution") || "",
     };
   }, []);
 
@@ -33,15 +33,15 @@ export default function TeacherProfilePage() {
 
   function saveProfile(e) {
     e.preventDefault();
-    localStorage.setItem("intumotion_profile_name", name.trim());
-    localStorage.setItem("intumotion_profile_email", email.trim());
-    localStorage.setItem("intumotion_profile_institution", institution.trim());
+    localStorage.setItem("IntuMotion_profile_name", name.trim());
+    localStorage.setItem("IntuMotion_profile_email", email.trim());
+    localStorage.setItem("IntuMotion_profile_institution", institution.trim());
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
   }
 
   function logout() {
-    localStorage.removeItem("intumotion_role");
+    localStorage.removeItem("IntuMotion_role");
     navigate("/login");
   }
 
@@ -54,7 +54,7 @@ export default function TeacherProfilePage() {
       <header className="site-header reveal">
         <Link className="brand" to="/teacher">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
           <Link to="/teacher" className="nav-cta">

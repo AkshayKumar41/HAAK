@@ -8,8 +8,8 @@ export default function LoginPage() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem("intumotion_role", role);
-    localStorage.setItem("intumotion_identity", identity.trim());
+    localStorage.setItem("IntuMotion_role", role);
+    localStorage.setItem("IntuMotion_identity", identity.trim());
     if (role === "teacher") {
       navigate("/teacher");
       return;
@@ -26,7 +26,7 @@ export default function LoginPage() {
       <header className="site-header reveal">
         <Link className="brand" to="/">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
           <Link to="/" className="nav-cta">

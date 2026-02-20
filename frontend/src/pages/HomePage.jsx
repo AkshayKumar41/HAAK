@@ -32,7 +32,7 @@ export default function HomePage() {
       <header className="site-header reveal">
         <a className="brand" href="#top">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </a>
         <nav>
           <a href="#vision">Vision</a>

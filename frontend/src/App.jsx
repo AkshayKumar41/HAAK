@@ -7,12 +7,12 @@ import StudentPortalPage from "./pages/StudentPortalPage";
 import StudentTestPage from "./pages/StudentTestPage";
 
 function TeacherRoute({ element }) {
-  const role = localStorage.getItem("intumotion_role");
+  const role = localStorage.getItem("IntuMotion_role");
   return role === "teacher" ? element : <Navigate to="/login" replace />;
 }
 
 function StudentRoute({ element }) {
-  const role = localStorage.getItem("intumotion_role");
+  const role = localStorage.getItem("IntuMotion_role");
   return role === "student" ? element : <Navigate to="/login" replace />;
 }
 
