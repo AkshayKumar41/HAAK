@@ -10,6 +10,18 @@ export default function LoginPage() {
       <div className="bg-orb orb-b" />
       <div className="bg-grid" />
 
+      <header className="site-header reveal">
+        <Link className="brand" to="/">
+          <span className="brand-mark" aria-hidden="true" />
+          <span className="brand-text">intumotion</span>
+        </Link>
+        <nav>
+          <Link to="/" className="nav-cta">
+            Home
+          </Link>
+        </nav>
+      </header>
+
       <main className="login-main">
         <section className="auth reveal">
           <div className="auth-card">
@@ -87,10 +99,6 @@ export default function LoginPage() {
                   Institution / Instructor
                 </button>
               </div>
-
-              <Link to="/" className="btn btn-ghost btn-full" style={{ textAlign: "center" }}>
-                Back to Home
-              </Link>
             </form>
           </div>
         </section>
