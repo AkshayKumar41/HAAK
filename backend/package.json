@@ -2,6 +2,10 @@
   "name": "haak-backend",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  },
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js"
