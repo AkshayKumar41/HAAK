@@ -95,7 +95,18 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.55rem;
+}
+
+.brand-logo {
+  width: 42px;
+  height: 24px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 6px;
+  display: block;
+  transform: translateY(-12px) scale(1.5);
+  transform-origin: center top;
 }
 
 .brand-mark {
@@ -111,6 +122,9 @@ a {
   font-weight: 800;
   letter-spacing: 0.015em;
   color: var(--brand-intu);
+  display: inline;
+  line-height: 1;
+  align-self: center;
 }
 
 .brand-text span {
@@ -168,7 +182,7 @@ main {
 
 .hero {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1fr;
   align-items: stretch;
   gap: 1.6rem;
 }
@@ -187,15 +201,28 @@ main {
 
 .hero-copy {
   padding: clamp(1.3rem, 3vw, 2.4rem);
+  display: grid;
+  gap: 0.9rem;
+  align-content: center;
+  min-height: 340px;
+  justify-items: center;
+  text-align: center;
 }
 
 .kicker {
   margin: 0;
   font-family: "Space Grotesk", sans-serif;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--brand-mastery);
-  font-size: 0.84rem;
+  color: #fff;
+  font-size: 1.02rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.78rem;
+  border-radius: 999px;
+  background: linear-gradient(140deg, #7117ea 0%, #98296b 55%, #ea6060 100%);
+  box-shadow: 0 10px 26px rgba(129, 45, 151, 0.35);
 }
 
 h1,
@@ -208,14 +235,14 @@ h3 {
 h1 {
   margin-top: 0.52rem;
   font-size: clamp(1.8rem, 4.4vw, 3.2rem);
-  max-width: 20ch;
+  max-width: none;
 }
 
 .hero-sub {
   margin: 1rem 0 0;
   color: var(--ink-700);
   line-height: 1.55;
-  max-width: 54ch;
+  max-width: none;
 }
 
 .hero-actions {
@@ -223,6 +250,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem;
+  justify-content: center;
 }
 
 .btn {
@@ -1094,6 +1122,84 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(113, 23, 234, 0.16);
 }
 
+select {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.72rem 0.82rem;
+  font-size: 0.94rem;
+  color: var(--ink-900);
+  background: #fff;
+  outline: none;
+}
+
+select:focus {
+  border-color: #a669f6;
+  box-shadow: 0 0 0 3px rgba(113, 23, 234, 0.16);
+}
+
+.exam-layout {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 0.9rem;
+}
+
+.exam-main {
+  min-height: 760px;
+}
+
+.exam-control {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  align-items: center;
+  color: var(--ink-700);
+}
+
+.exam-control input {
+  width: 16px;
+  height: 16px;
+}
+
+.microscope-view {
+  border: 1px solid #cde0f2;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 48%, #eef8ff 0%, #e8f3ff 55%, #f8fbff 100%);
+  min-height: 250px;
+  display: grid;
+  place-items: center;
+}
+
+.cell-field {
+  width: min(420px, 90%);
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  border: 2px solid #95aeca;
+  background: radial-gradient(circle, rgba(193, 218, 242, 0.45), rgba(255, 255, 255, 0.9));
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  padding: 1.2rem;
+}
+
+.cell-field.stained {
+  border-color: #6a88b6;
+  background: radial-gradient(circle, rgba(149, 191, 245, 0.5), rgba(255, 255, 255, 0.92));
+}
+
+.cell-dot {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  background: radial-gradient(circle at 40% 35%, #c7dbf6, #8eaed8);
+  border: 1px solid #88a7cf;
+}
+
+.cell-field.stained .cell-dot {
+  background: radial-gradient(circle at 40% 35%, #8fb9ef, #4f78b5);
+  border-color: #476ca1;
+}
+
 .btn-full {
   margin-top: 0.3rem;
   width: 100%;
@@ -1259,6 +1365,10 @@ input:focus {
   }
 
   .sim-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .exam-layout {
     grid-template-columns: 1fr;
   }
 

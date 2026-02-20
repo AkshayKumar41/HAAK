@@ -5,6 +5,7 @@ import TeacherPortalPage from "./pages/TeacherPortalPage";
 import TeacherProfilePage from "./pages/TeacherProfilePage";
 import StudentPortalPage from "./pages/StudentPortalPage";
 import StudentTestPage from "./pages/StudentTestPage";
+import StudentExamPage from "./pages/StudentExamPage";
 
 function TeacherRoute({ element }) {
   const role = localStorage.getItem("IntuMotion_role");
@@ -24,6 +25,14 @@ export default function App() {
       <Route path="/teacher" element={<TeacherRoute element={<TeacherPortalPage />} />} />
       <Route path="/teacher/profile" element={<TeacherRoute element={<TeacherProfilePage />} />} />
       <Route path="/student" element={<StudentRoute element={<StudentPortalPage />} />} />
+      <Route
+        path="/student/classes/:classId/assessments/:assessmentId/test"
+        element={<StudentRoute element={<StudentExamPage />} />}
+      />
+      <Route
+        path="/student/classes/:classId/assessments/:assessmentId/practice"
+        element={<StudentRoute element={<StudentTestPage />} />}
+      />
       <Route
         path="/student/classes/:classId/assessments/:assessmentId/:mode"
         element={<StudentRoute element={<StudentTestPage />} />}

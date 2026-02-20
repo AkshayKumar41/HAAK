@@ -62,7 +62,7 @@ export default function StudentPortalPage() {
 
       <header className="site-header reveal">
         <Link className="brand" to="/">
-          <span className="brand-mark" aria-hidden="true" />
+          <img className="brand-logo" src="/IntuMotion.png" alt="IntuMotion logo" />
           <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>

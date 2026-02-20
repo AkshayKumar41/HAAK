@@ -31,7 +31,7 @@ export default function HomePage() {
 
       <header className="site-header reveal">
         <a className="brand" href="#top">
-          <span className="brand-mark" aria-hidden="true" />
+          <img className="brand-logo" src="/IntuMotion.png" alt="IntuMotion logo" />
           <span className="brand-text">IntuMotion</span>
         </a>
         <nav>
@@ -60,25 +60,6 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-
-          <article className="preview-card reveal-stagger">
-            <h3>Live Preview</h3>
-            <p className="preview-title">Accounting Scenario: Office Reconciliation</p>
-            <ul>
-              <li>
-                <span>Environment</span>
-                <strong>Finance workplace simulation</strong>
-              </li>
-              <li>
-                <span>Mode</span>
-                <strong>Supportive adaptive coaching</strong>
-              </li>
-              <li>
-                <span>Outcome</span>
-                <strong>Mastery path + confidence summary</strong>
-              </li>
-            </ul>
-          </article>
         </section>
 
         <section id="vision" className="panel reveal">

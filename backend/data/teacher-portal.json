@@ -1,27 +1,101 @@
 {
   "classes": [
     {
-      "id": "class-1771569009091",
-      "name": "asd",
+      "id": "acct-201-a",
+      "name": "Financial Accounting 201 - Section A",
       "status": "Active",
-      "students": [],
+      "students": [
+        "Ava Patel",
+        "Noah Johnson",
+        "Mia Nguyen",
+        "Ethan Rivera",
+        "Sofia Kim",
+        "Liam Chen",
+        "Emma Brooks",
+        "Lucas Shah",
+        "Grace Turner",
+        "Daniel Flores",
+        "Olivia Reed",
+        "Henry Wallace",
+        "Isabella Cruz",
+        "Benjamin Price",
+        "Chloe Martin",
+        "James Carter"
+      ],
       "assessments": [
         {
-          "id": "class-1771569009091-1771575344913",
-          "title": "Blank test",
-          "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+          "id": "acct-201-a-assess-01",
+          "title": "Revenue Reconciliation Sprint",
+          "prompt": "Students reconcile monthly cash receipts against sales ledger entries, identify mismatches, and post correcting journal entries with evidence.",
           "keyConcepts": [
-            "Revanue Reconciliation",
-            "Ledgers"
+            "Revenue recognition timing",
+            "Cash vs accrual differences",
+            "Adjusting journal entries",
+            "Duplicate or missing transactions"
           ],
-          "files": [],
-          "scores": [],
+          "files": [
+            {
+              "name": "bank_statement_march.xlsx",
+              "size": 304112,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            {
+              "name": "sales_ledger_march.xlsx",
+              "size": 281443,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            {
+              "name": "adjustment_template.xlsx",
+              "size": 148025,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          ],
+          "scores": [
+            {
+              "id": "score-acct-201-a-001",
+              "studentName": "Ava Patel",
+              "score": 92,
+              "breakdown": [
+                {
+                  "concept": "Revenue recognition timing",
+                  "correct": 4,
+                  "total": 5
+                },
+                {
+                  "concept": "Adjusting journal entries",
+                  "correct": 5,
+                  "total": 5
+                }
+              ],
+              "submittedAt": "2026-02-17T16:28:00.000Z"
+            },
+            {
+              "id": "score-acct-201-a-002",
+              "studentName": "Noah Johnson",
+              "score": 84,
+              "breakdown": [
+                {
+                  "concept": "Cash vs accrual differences",
+                  "correct": 4,
+                  "total": 5
+                },
+                {
+                  "concept": "Duplicate or missing transactions",
+                  "correct": 3,
+                  "total": 5
+                }
+              ],
+              "submittedAt": "2026-02-18T18:05:00.000Z"
+            }
+          ],
           "generatedQuiz": {
-            "generatedAt": "2026-02-20T08:27:52.297Z",
-            "prompt": "generate a quiz for accounting students. this should be testing revenue reconciliation.  Make sure they can interact with ledgers, bank statements, and  other financial statements. This should be in an excel style format.",
+            "generatedAt": "2026-02-20T11:18:33.352Z",
+            "prompt": "Students reconcile monthly cash receipts against sales ledger entries, identify mismatches, and post correcting journal entries with evidence.",
             "keyConcepts": [
-              "Revanue Reconciliation",
-              "Ledgers"
+              "Revenue recognition timing",
+              "Cash vs accrual differences",
+              "Adjusting journal entries",
+              "Duplicate or missing transactions"
             ],
             "realismProfile": "interactive-workbook-sim",
             "caseReferences": [
@@ -36,15 +110,16 @@
                 "sourceHint": "University accounting case studies and CPA prep scenarios"
               }
             ],
+            "practiceAppHtml": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Practice App</title>\n    <style>\n      body { margin: 0; font-family: Arial, sans-serif; background: #f3f6fb; color: #172030; }\n      .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }\n      .top { display: grid; gap: 10px; background: #fff; border: 1px solid #d7e1ef; border-radius: 12px; padding: 14px; }\n      .row { display: flex; gap: 8px; flex-wrap: wrap; }\n      button { border: 1px solid #c6d2e6; background: #fff; border-radius: 8px; padding: 8px 10px; cursor: pointer; }\n      button.primary { background: #1f6f43; color: #fff; border-color: #1f6f43; }\n      .q { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .opts { display: grid; gap: 8px; margin-top: 8px; }\n      .status { margin-top: 8px; color: #36557d; }\n      .score { margin-top: 10px; font-weight: 700; }\n      .files { margin-top: 10px; border: 1px solid #d7e1ef; background: #fff; border-radius: 10px; padding: 12px; }\n      .muted { color: #5f6f84; font-size: 13px; }\n    </style>\n  </head>\n  <body>\n    <div class=\"wrap\">\n      <div class=\"top\">\n        <h2 id=\"title\"></h2>\n        <p class=\"muted\">Generated practice runtime (fallback). Live questions are fetched from backend.</p>\n        <div class=\"row\">\n          <button id=\"nextQ\" class=\"primary\">Generate Live Question</button>\n          <button id=\"markCorrect\">Mark Correct</button>\n          <button id=\"markWrong\">Mark Wrong</button>\n        </div>\n        <div class=\"status\" id=\"guidance\">Guidance: start by requesting a live question.</div>\n        <div class=\"score\" id=\"score\"></div>\n      </div>\n      <div class=\"files\">\n        <strong>Workbook Files</strong>\n        <p class=\"muted\">Open and use: bank_statement_feb.xlsx, general_ledger_feb.xlsx, adjustments_workbook.xlsx</p>\n      </div>\n      <div class=\"q\">\n        <strong>Live Question</strong>\n        <div id=\"prompt\" class=\"muted\">No question yet.</div>\n        <div id=\"options\" class=\"opts\"></div>\n      </div>\n    </div>\n    <script>\n      const title = \"Generated Interactive Simulation\";\n      const teacherPrompt = \"Students reconcile monthly cash receipts against sales ledger entries, identify mismatches, and post correcting journal entries with evidence.\";\n      const keyConcepts = [\"Revenue recognition timing\",\"Cash vs accrual differences\",\"Adjusting journal entries\",\"Duplicate or missing transactions\"];\n      let asked = 0;\n      let correct = 0;\n      let current = null;\n      let focusConcept = keyConcepts[0] || \"Statement Analysis\";\n\n      const titleEl = document.getElementById(\"title\");\n      const promptEl = document.getElementById(\"prompt\");\n      const optionsEl = document.getElementById(\"options\");\n      const scoreEl = document.getElementById(\"score\");\n      const guidanceEl = document.getElementById(\"guidance\");\n      titleEl.textContent = title + \" (Practice)\";\n\n      function renderScore() {\n        const pct = asked ? Math.round((correct / asked) * 100) : 0;\n        scoreEl.textContent = \"Practice Score: \" + pct + \"% (\" + correct + \"/\" + asked + \")\";\n      }\n\n      function renderQuestion(q) {\n        current = q;\n        promptEl.textContent = q.prompt || \"No prompt\";\n        optionsEl.innerHTML = \"\";\n        (q.options || []).forEach((opt, idx) => {\n          const btn = document.createElement(\"button\");\n          btn.textContent = (idx + 1) + \". \" + opt;\n          btn.onclick = () => {\n            const isCorrect = idx === q.correctIndex;\n            asked += 1;\n            if (isCorrect) correct += 1;\n            guidanceEl.textContent = isCorrect\n              ? \"Guidance: good answer. Next concept will increase in difficulty.\"\n              : \"Guidance: review evidence and try again on this concept.\";\n            renderScore();\n          };\n          optionsEl.appendChild(btn);\n        });\n      }\n\n      async function fetchLiveQuestion() {\n        const body = {\n          assessmentTitle: title,\n          teacherPrompt,\n          keyConcepts,\n          focusConcept,\n          userState: { asked, correct }\n        };\n        const res = await fetch(\"/api/student/live-question\", {\n          method: \"POST\",\n          headers: { \"Content-Type\": \"application/json\" },\n          body: JSON.stringify(body)\n        });\n        const data = await res.json();\n        renderQuestion(data);\n      }\n\n      document.getElementById(\"nextQ\").onclick = async () => {\n        focusConcept = keyConcepts[asked % Math.max(1, keyConcepts.length)] || \"Statement Analysis\";\n        await fetchLiveQuestion();\n      };\n      document.getElementById(\"markCorrect\").onclick = () => { asked += 1; correct += 1; renderScore(); };\n      document.getElementById(\"markWrong\").onclick = () => { asked += 1; renderScore(); };\n      renderScore();\n    </script>\n  </body>\n</html>",
             "pages": [
               {
                 "id": "gen-page-1",
-                "focusConcept": "Revanue Reconciliation",
-                "scenarioTitle": "Revanue Reconciliation Interactive Scenario",
+                "focusConcept": "Revenue recognition timing",
+                "scenarioTitle": "Revenue recognition timing Interactive Scenario",
                 "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Revanue Reconciliation.",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Revenue recognition timing.",
                 "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of Revanue Reconciliation.",
+                  "prompt": "Select the best action that demonstrates mastery of Revenue recognition timing.",
                   "options": [
                     "Use evidence from statements and ledger to justify each adjustment",
                     "Skip checks and use a shortcut",
@@ -56,12 +131,46 @@
               },
               {
                 "id": "gen-page-2",
-                "focusConcept": "Ledgers",
-                "scenarioTitle": "Ledgers Interactive Scenario",
+                "focusConcept": "Cash vs accrual differences",
+                "scenarioTitle": "Cash vs accrual differences Interactive Scenario",
                 "caseContext": "Cashflow Anomaly Investigation in Retail Ops",
-                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Ledgers.",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Cash vs accrual differences.",
                 "conceptQuestion": {
-                  "prompt": "Select the best action that demonstrates mastery of Ledgers.",
+                  "prompt": "Select the best action that demonstrates mastery of Cash vs accrual differences.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-3",
+                "focusConcept": "Adjusting journal entries",
+                "scenarioTitle": "Adjusting journal entries Interactive Scenario",
+                "caseContext": "Revenue Reconciliation for Mid-Market SaaS",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Adjusting journal entries.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Adjusting journal entries.",
+                  "options": [
+                    "Use evidence from statements and ledger to justify each adjustment",
+                    "Skip checks and use a shortcut",
+                    "Prioritize speed over correctness",
+                    "Ignore conflicting entries"
+                  ],
+                  "correctIndex": 0
+                }
+              },
+              {
+                "id": "gen-page-4",
+                "focusConcept": "Duplicate or missing transactions",
+                "scenarioTitle": "Duplicate or missing transactions Interactive Scenario",
+                "caseContext": "Cashflow Anomaly Investigation in Retail Ops",
+                "taskPrompt": "Interact with the workbook files and complete all tasks focused on Duplicate or missing transactions.",
+                "conceptQuestion": {
+                  "prompt": "Select the best action that demonstrates mastery of Duplicate or missing transactions.",
                   "options": [
                     "Use evidence from statements and ledger to justify each adjustment",
                     "Skip checks and use a shortcut",
@@ -75,163 +184,181 @@
             "fallback": true,
             "fallbackReason": "Used local fallback because OCI response was unavailable or malformed."
           }
-        }
-      ]
-    },
-    {
-      "id": "acct-101",
-      "name": "Accounting 101",
-      "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28"
-      ],
-      "assessments": [
+        },
         {
-          "id": "acct-101-1771574307704",
-          "title": "Asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [],
+          "id": "acct-201-a-assess-02",
+          "title": "Quarter-End Controls Check",
+          "prompt": "Evaluate whether cash receipts, invoice dates, and posting dates align with quarter-end controls and reporting requirements.",
+          "keyConcepts": [
+            "Cutoff procedures",
+            "Internal controls",
+            "Audit trail quality"
+          ],
+          "files": [
+            {
+              "name": "quarter_end_checklist.pdf",
+              "size": 221904,
+              "type": "application/pdf"
+            }
+          ],
+          "scores": [
+            {
+              "id": "score-acct-201-a-003",
+              "studentName": "Mia Nguyen",
+              "score": 88,
+              "breakdown": [
+                {
+                  "concept": "Cutoff procedures",
+                  "correct": 4,
+                  "total": 5
+                }
+              ],
+              "submittedAt": "2026-02-19T20:11:00.000Z"
+            }
+          ],
           "generatedQuiz": null
         }
       ]
     },
     {
-      "id": "bio-220",
-      "name": "Biology 220",
+      "id": "bio-220-b",
+      "name": "Biology 220 - Cell Systems Lab",
       "status": "Active",
       "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28",
-        "Student 29",
-        "Student 30",
-        "Student 31",
-        "Student 32",
-        "Student 33",
-        "Student 34"
+        "Layla Thompson",
+        "Mason Diaz",
+        "Nora Ali",
+        "Caleb Morgan",
+        "Hannah Lee",
+        "Owen Scott",
+        "Zoe Ramirez",
+        "Leo Bennett",
+        "Aria Singh",
+        "Gabriel Adams",
+        "Elena Foster",
+        "Wyatt Hughes",
+        "Lila Gomez",
+        "Jack Parker"
       ],
       "assessments": [
         {
-          "id": "bio-220-1771568575223",
-          "title": "asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [],
+          "id": "bio-220-b-assess-01",
+          "title": "Microscopy Workflow Verification",
+          "prompt": "Students evaluate sample prep quality, identify staining errors, and choose corrective actions before imaging.",
+          "keyConcepts": [
+            "Sample preparation",
+            "Staining protocol",
+            "Observation accuracy"
+          ],
+          "files": [
+            {
+              "name": "lab_protocol_week4.pdf",
+              "size": 184532,
+              "type": "application/pdf"
+            },
+            {
+              "name": "microscope_log_template.xlsx",
+              "size": 97244,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          ],
+          "scores": [
+            {
+              "id": "score-1771586893712",
+              "studentName": "Student",
+              "score": 83,
+              "breakdown": [
+                {
+                  "concept": "Staining protocol",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Sample preparation",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Microscopy readiness",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Lab safety controls",
+                  "correct": 0,
+                  "total": 1
+                }
+              ],
+              "submittedAt": "2026-02-20T11:28:13.712Z"
+            },
+            {
+              "id": "score-1771586787548",
+              "studentName": "Student",
+              "score": 100,
+              "breakdown": [
+                {
+                  "concept": "Staining protocol",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Sample preparation",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Microscopy readiness",
+                  "correct": 1,
+                  "total": 1
+                },
+                {
+                  "concept": "Lab safety controls",
+                  "correct": 1,
+                  "total": 1
+                }
+              ],
+              "submittedAt": "2026-02-20T11:26:27.548Z"
+            },
+            {
+              "id": "score-bio-220-b-001",
+              "studentName": "Layla Thompson",
+              "score": 90,
+              "breakdown": [
+                {
+                  "concept": "Staining protocol",
+                  "correct": 5,
+                  "total": 6
+                }
+              ],
+              "submittedAt": "2026-02-16T15:40:00.000Z"
+            },
+            {
+              "id": "score-bio-220-b-002",
+              "studentName": "Mason Diaz",
+              "score": 78,
+              "breakdown": [
+                {
+                  "concept": "Observation accuracy",
+                  "correct": 4,
+                  "total": 6
+                }
+              ],
+              "submittedAt": "2026-02-17T17:09:00.000Z"
+            }
+          ],
           "generatedQuiz": null
         },
         {
-          "id": "bio-lab-2",
-          "title": "Cell Lab Prep",
-          "prompt": "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
-          "keyConcepts": [],
+          "id": "bio-220-b-assess-02",
+          "title": "Genetics Data Interpretation",
+          "prompt": "Interpret genotype/phenotype tables, infer inheritance patterns, and justify conclusions with evidence.",
+          "keyConcepts": [
+            "Punnett analysis",
+            "Dominant vs recessive traits",
+            "Data-backed reasoning"
+          ],
           "files": [],
           "scores": [],
-          "generatedQuiz": null
-        }
-      ]
-    },
-    {
-      "id": "arch-301",
-      "name": "Architecture Studio 301",
-      "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19"
-      ],
-      "assessments": [
-        {
-          "id": "arch-concept-1",
-          "title": "Concept Design Critique",
-          "prompt": "Generate a rubric-based assessment for concept sketches: spatial logic, function, materials, and clarity of presentation notes.",
-          "keyConcepts": [],
-          "files": [],
-          "scores": [
-            {
-              "id": "score-1771569701091",
-              "studentName": "Teacher",
-              "score": 13,
-              "breakdown": [
-                {
-                  "concept": "General Understanding",
-                  "correct": 1,
-                  "total": 8
-                }
-              ],
-              "submittedAt": "2026-02-20T06:41:41.091Z"
-            }
-          ],
           "generatedQuiz": null
         }
       ]

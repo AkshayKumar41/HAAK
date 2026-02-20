@@ -8,6 +8,13 @@ const DEFAULT_CONCEPTS = [
   "Revenue Recognition",
 ];
 
+function ensureMinimumConcepts(concepts, minCount = 2) {
+  const cleaned = (concepts || []).filter(Boolean);
+  if (cleaned.length >= minCount) return cleaned;
+  const padding = DEFAULT_CONCEPTS.filter((item) => !cleaned.includes(item));
+  return [...cleaned, ...padding].slice(0, minCount);
+}
+
 function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -347,12 +354,13 @@ export default function StudentTestPage() {
             : concepts.length
               ? concepts
               : DEFAULT_CONCEPTS;
-        setKeyConcepts(pool);
+        const seededConcepts = ensureMinimumConcepts(pool, 2);
+        setKeyConcepts(seededConcepts);
 
         let rollingCash = 50000;
         const initialPages = !isPractice && Array.isArray(found.generatedQuiz?.pages) && found.generatedQuiz.pages.length
           ? found.generatedQuiz.pages.map((pageTemplate, idx) => {
-              const concept = pageTemplate.focusConcept || pool[idx] || DEFAULT_CONCEPTS[0];
+              const concept = pageTemplate.focusConcept || seededConcepts[idx] || DEFAULT_CONCEPTS[0];
               const page = buildScenario({
                 focusConcept: concept,
                 pageIndex: idx,
@@ -363,7 +371,7 @@ export default function StudentTestPage() {
               rollingCash += page.expectedNetDelta;
               return page;
             })
-          : pool.map((concept, idx) => {
+          : seededConcepts.map((concept, idx) => {
               const page = buildScenario({
                 focusConcept: concept,
                 pageIndex: idx,
@@ -598,9 +606,28 @@ export default function StudentTestPage() {
     const currentResult = { pageId: currentPage.id, concept: currentPage.focusConcept, attempts: nextAttempt };
     const nextResults = [...pageResults, currentResult];
     setPageResults(nextResults);
-    setCarryoverCash((prev) => prev + currentPage.expectedNetDelta);
+    const nextOpeningCash = carryoverCash + currentPage.expectedNetDelta;
+    setCarryoverCash(nextOpeningCash);
 
     const nextPageIndex = currentPageIndex + 1;
+    if (currentPageIndex === 0 && pages.length >= 2) {
+      const weakConcepts = deriveWeakConcepts(keyConcepts, nextStats);
+      const adaptiveConcept = weakConcepts[0] || pages[1].focusConcept || keyConcepts[1] || keyConcepts[0];
+      const adaptivePage = buildScenario({
+        focusConcept: adaptiveConcept,
+        pageIndex: 1,
+        openingCash: nextOpeningCash,
+        remediation: weakConcepts.length > 0,
+      });
+
+      setPages((prev) => [prev[0], adaptivePage, ...prev.slice(2)]);
+      setCoachMessage(
+        weakConcepts.length > 0
+          ? `AI Coach: Page 2 adapted to reinforce ${adaptiveConcept}.`
+          : `AI Coach: Page 2 is ready with a balanced ${adaptiveConcept} scenario.`
+      );
+    }
+
     if (nextPageIndex < pages.length) {
       setCurrentPageIndex(nextPageIndex);
       return;
@@ -663,7 +690,7 @@ export default function StudentTestPage() {
 
       <header className="site-header reveal">
         <Link className="brand" to="/student">
-          <span className="brand-mark" aria-hidden="true" />
+          <img className="brand-logo" src="/IntuMotion.png" alt="IntuMotion logo" />
           <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
