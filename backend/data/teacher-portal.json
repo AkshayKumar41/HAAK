@@ -1,0 +1,198 @@
+{
+  "classes": [
+    {
+      "id": "class-1771569009091",
+      "name": "asd",
+      "status": "Active",
+      "students": [],
+      "assessments": []
+    },
+    {
+      "id": "acct-101",
+      "name": "Accounting 101",
+      "status": "Active",
+      "students": [
+        "Student 1",
+        "Student 2",
+        "Student 3",
+        "Student 4",
+        "Student 5",
+        "Student 6",
+        "Student 7",
+        "Student 8",
+        "Student 9",
+        "Student 10",
+        "Student 11",
+        "Student 12",
+        "Student 13",
+        "Student 14",
+        "Student 15",
+        "Student 16",
+        "Student 17",
+        "Student 18",
+        "Student 19",
+        "Student 20",
+        "Student 21",
+        "Student 22",
+        "Student 23",
+        "Student 24",
+        "Student 25",
+        "Student 26",
+        "Student 27",
+        "Student 28"
+      ],
+      "assessments": [
+        {
+          "id": "acct-101-1771568885539",
+          "title": "aa",
+          "prompt": "aa",
+          "keyConcepts": [
+            "a",
+            "a"
+          ],
+          "files": [],
+          "scores": [
+            {
+              "id": "score-1771569730849",
+              "studentName": "Teacher",
+              "score": 25,
+              "breakdown": [
+                {
+                  "concept": "a",
+                  "correct": 2,
+                  "total": 8
+                }
+              ],
+              "submittedAt": "2026-02-20T06:42:10.849Z"
+            }
+          ]
+        },
+        {
+          "id": "acct-101-1771568610543",
+          "title": "num 2",
+          "prompt": "2",
+          "keyConcepts": [],
+          "files": [],
+          "scores": []
+        },
+        {
+          "id": "acct-101-1771567320783",
+          "title": "asd",
+          "prompt": "asd",
+          "keyConcepts": [],
+          "files": [],
+          "scores": []
+        }
+      ]
+    },
+    {
+      "id": "bio-220",
+      "name": "Biology 220",
+      "status": "Active",
+      "students": [
+        "Student 1",
+        "Student 2",
+        "Student 3",
+        "Student 4",
+        "Student 5",
+        "Student 6",
+        "Student 7",
+        "Student 8",
+        "Student 9",
+        "Student 10",
+        "Student 11",
+        "Student 12",
+        "Student 13",
+        "Student 14",
+        "Student 15",
+        "Student 16",
+        "Student 17",
+        "Student 18",
+        "Student 19",
+        "Student 20",
+        "Student 21",
+        "Student 22",
+        "Student 23",
+        "Student 24",
+        "Student 25",
+        "Student 26",
+        "Student 27",
+        "Student 28",
+        "Student 29",
+        "Student 30",
+        "Student 31",
+        "Student 32",
+        "Student 33",
+        "Student 34"
+      ],
+      "assessments": [
+        {
+          "id": "bio-220-1771568575223",
+          "title": "asd",
+          "prompt": "asd",
+          "keyConcepts": [],
+          "files": [],
+          "scores": []
+        },
+        {
+          "id": "bio-lab-2",
+          "title": "Cell Lab Prep",
+          "prompt": "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
+          "keyConcepts": [],
+          "files": [],
+          "scores": []
+        }
+      ]
+    },
+    {
+      "id": "arch-301",
+      "name": "Architecture Studio 301",
+      "status": "Active",
+      "students": [
+        "Student 1",
+        "Student 2",
+        "Student 3",
+        "Student 4",
+        "Student 5",
+        "Student 6",
+        "Student 7",
+        "Student 8",
+        "Student 9",
+        "Student 10",
+        "Student 11",
+        "Student 12",
+        "Student 13",
+        "Student 14",
+        "Student 15",
+        "Student 16",
+        "Student 17",
+        "Student 18",
+        "Student 19"
+      ],
+      "assessments": [
+        {
+          "id": "arch-concept-1",
+          "title": "Concept Design Critique",
+          "prompt": "Generate a rubric-based assessment for concept sketches: spatial logic, function, materials, and clarity of presentation notes.",
+          "keyConcepts": [],
+          "files": [],
+          "scores": [
+            {
+              "id": "score-1771569701091",
+              "studentName": "Teacher",
+              "score": 13,
+              "breakdown": [
+                {
+                  "concept": "General Understanding",
+                  "correct": 1,
+                  "total": 8
+                }
+              ],
+              "submittedAt": "2026-02-20T06:41:41.091Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

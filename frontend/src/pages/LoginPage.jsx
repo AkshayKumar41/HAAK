@@ -1,8 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [role, setRole] = useState("student");
+  const [identity, setIdentity] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    localStorage.setItem("intumotion_role", role);
+    localStorage.setItem("intumotion_identity", identity.trim());
+    if (role === "teacher") {
+      navigate("/teacher");
+      return;
+    }
+    navigate("/student");
+  }
 
   return (
     <div className="shell">
@@ -30,9 +43,15 @@ export default function LoginPage() {
               <p>Choose your identity and role to personalize your learning journey.</p>
             </div>
 
-            <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="auth-form" onSubmit={handleSubmit}>
               <label htmlFor="identity">Email or Username</label>
-              <input id="identity" type="text" placeholder="name@school.edu or username" />
+              <input
+                id="identity"
+                type="text"
+                value={identity}
+                onChange={(e) => setIdentity(e.target.value)}
+                placeholder="name@school.edu or username"
+              />
 
               <label htmlFor="password">Password</label>
               <input id="password" type="password" placeholder="Enter your password" />
@@ -93,10 +112,10 @@ export default function LoginPage() {
                 </button>
                 <button
                   type="button"
-                  className={`btn btn-role ${role === "institution" ? "active" : ""}`}
-                  onClick={() => setRole("institution")}
+                  className={`btn btn-role ${role === "teacher" ? "active" : ""}`}
+                  onClick={() => setRole("teacher")}
                 >
-                  Institution / Instructor
+                  Teacher / Instructor
                 </button>
               </div>
             </form>
