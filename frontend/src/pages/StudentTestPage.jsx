@@ -14,12 +14,24 @@ function currency(value) {
 }
 
 function getStudentName() {
-  const saved = localStorage.getItem("intumotion_profile_name") || "";
+  const saved = localStorage.getItem("IntuMotion_profile_name") || "";
   if (saved) return saved;
 
-  const identity = localStorage.getItem("intumotion_identity") || "";
+  const identity = localStorage.getItem("IntuMotion_identity") || "";
   if (identity.includes("@")) return identity.split("@")[0] || "Student";
   return identity || "Student";
+}
+
+function fileLabel(view) {
+  if (view === "bank") return "bank_statement_oct.xlsx";
+  if (view === "ledger") return "general_ledger_oct.xlsx";
+  return "adjustments_workbook.xlsx";
+}
+
+function formulaHint(view) {
+  if (view === "bank") return "=SUM(D2:D6)";
+  if (view === "ledger") return "=SUM(E2:E7)";
+  return "=IF(C2=TRUE,\"Selected\",\"Not Selected\")";
 }
 
 function generateScenario() {
@@ -136,6 +148,11 @@ export default function StudentTestPage() {
   const [error, setError] = useState("");
 
   const [activeView, setActiveView] = useState("bank");
+  const [expandedFolders, setExpandedFolders] = useState({
+    root: true,
+    statements: true,
+    entries: true,
+  });
   const [bankFlags, setBankFlags] = useState([]);
   const [ledgerFlags, setLedgerFlags] = useState([]);
   const [selectedAdjustments, setSelectedAdjustments] = useState([]);
@@ -202,6 +219,14 @@ export default function StudentTestPage() {
 
   function toggleAdjustment(id) {
     setSelectedAdjustments((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  }
+
+  function toggleFolder(id) {
+    setExpandedFolders((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  function openFile(view) {
+    setActiveView(view);
   }
 
   async function validateAttempt() {
@@ -276,7 +301,7 @@ export default function StudentTestPage() {
       <header className="site-header reveal">
         <Link className="brand" to="/student">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </Link>
         <nav>
           <button type="button" className="btn btn-ghost" onClick={() => navigate("/student")}>
@@ -285,7 +310,7 @@ export default function StudentTestPage() {
         </nav>
       </header>
 
-      <main>
+      <main className="sim-main-full">
         <section className="panel reveal">
           <h2>{isPractice ? "Practice Simulation" : "Adaptive Simulation Test"}</h2>
           <p className="portal-subtitle">
@@ -322,113 +347,163 @@ export default function StudentTestPage() {
                 <p className="portal-subtitle">Attempts: {attemptCount}</p>
               </aside>
 
-              <div className="sim-main">
-                <div className="sim-tabs">
-                  <button
-                    type="button"
-                    className={`sim-tab ${activeView === "bank" ? "active" : ""}`}
-                    onClick={() => setActiveView("bank")}
-                  >
-                    Bank Statement
-                  </button>
-                  <button
-                    type="button"
-                    className={`sim-tab ${activeView === "ledger" ? "active" : ""}`}
-                    onClick={() => setActiveView("ledger")}
-                  >
-                    Ledger
-                  </button>
-                  <button
-                    type="button"
-                    className={`sim-tab ${activeView === "adjustments" ? "active" : ""}`}
-                    onClick={() => setActiveView("adjustments")}
-                  >
-                    Adjustments
-                  </button>
+              <div className="sim-workspace">
+                <aside className="explorer-panel">
+                  <h4>Files</h4>
+                  <p className="portal-subtitle">Open a workbook to continue</p>
+
+                  <div className="file-tree">
+                    <button type="button" className="folder-btn" onClick={() => toggleFolder("root")}>
+                      {expandedFolders.root ? "▾" : "▸"} Course Files
+                    </button>
+                    {expandedFolders.root && (
+                      <div className="file-indent">
+                        <button type="button" className="folder-btn" onClick={() => toggleFolder("statements")}>
+                          {expandedFolders.statements ? "▾" : "▸"} Statements
+                        </button>
+                        {expandedFolders.statements && (
+                          <button type="button" className="file-btn" onClick={() => openFile("bank")}>
+                            {fileLabel("bank")}
+                          </button>
+                        )}
+
+                        <button type="button" className="folder-btn" onClick={() => toggleFolder("entries")}>
+                          {expandedFolders.entries ? "▾" : "▸"} Journal Entries
+                        </button>
+                        {expandedFolders.entries && (
+                          <>
+                            <button type="button" className="file-btn" onClick={() => openFile("ledger")}>
+                              {fileLabel("ledger")}
+                            </button>
+                            <button type="button" className="file-btn" onClick={() => openFile("adjustments")}>
+                              {fileLabel("adjustments")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </aside>
+
+                <div className="sim-main excel-shell">
+                  <div className="sim-tabs excel-tabs">
+                    <button
+                      type="button"
+                      className={`sim-tab ${activeView === "bank" ? "active" : ""}`}
+                      onClick={() => setActiveView("bank")}
+                    >
+                      Bank Statement
+                    </button>
+                    <button
+                      type="button"
+                      className={`sim-tab ${activeView === "ledger" ? "active" : ""}`}
+                      onClick={() => setActiveView("ledger")}
+                    >
+                      Ledger
+                    </button>
+                    <button
+                      type="button"
+                      className={`sim-tab ${activeView === "adjustments" ? "active" : ""}`}
+                      onClick={() => setActiveView("adjustments")}
+                    >
+                      Adjustments
+                    </button>
+                  </div>
+
+                  <div className="excel-formula">
+                    <span className="excel-fx">fx</span>
+                    <input type="text" readOnly value={formulaHint(activeView)} />
+                  </div>
+
+                  {activeView === "bank" && (
+                    <div className="sim-table-wrap excel-grid-wrap">
+                      <table className="sim-table excel-grid">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Mark</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {scenario.bankEntries.map((entry, index) => (
+                            <tr key={entry.id}>
+                              <td>{index + 1}</td>
+                              <td>{entry.date}</td>
+                              <td>{entry.description}</td>
+                              <td>{currency(entry.amount)}</td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className={`sim-mark ${bankFlags.includes(entry.id) ? "active" : ""}`}
+                                  onClick={() => toggleFlag(bankFlags, setBankFlags, entry.id)}
+                                >
+                                  {bankFlags.includes(entry.id) ? "Marked" : "Mark Issue"}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {activeView === "ledger" && (
+                    <div className="sim-table-wrap excel-grid-wrap">
+                      <table className="sim-table excel-grid">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Account</th>
+                            <th>Memo</th>
+                            <th>Amount</th>
+                            <th>Mark</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {scenario.ledgerEntries.map((entry, index) => (
+                            <tr key={entry.id}>
+                              <td>{index + 1}</td>
+                              <td>{entry.date}</td>
+                              <td>{entry.account}</td>
+                              <td>{entry.memo}</td>
+                              <td>{currency(entry.amount)}</td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className={`sim-mark ${ledgerFlags.includes(entry.id) ? "active" : ""}`}
+                                  onClick={() => toggleFlag(ledgerFlags, setLedgerFlags, entry.id)}
+                                >
+                                  {ledgerFlags.includes(entry.id) ? "Marked" : "Mark Issue"}
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {activeView === "adjustments" && (
+                    <div className="sim-adjustments excel-adjustments">
+                      {scenario.adjustmentOptions.map((option, index) => (
+                        <label key={option.id} className="sim-check">
+                          <input
+                            type="checkbox"
+                            checked={selectedAdjustments.includes(option.id)}
+                            onChange={() => toggleAdjustment(option.id)}
+                          />
+                          <span>
+                            {String.fromCharCode(65 + index)}. {option.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                {activeView === "bank" && (
-                  <div className="sim-table-wrap">
-                    <table className="sim-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Description</th>
-                          <th>Amount</th>
-                          <th>Mark</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {scenario.bankEntries.map((entry) => (
-                          <tr key={entry.id}>
-                            <td>{entry.date}</td>
-                            <td>{entry.description}</td>
-                            <td>{currency(entry.amount)}</td>
-                            <td>
-                              <button
-                                type="button"
-                                className={`sim-mark ${bankFlags.includes(entry.id) ? "active" : ""}`}
-                                onClick={() => toggleFlag(bankFlags, setBankFlags, entry.id)}
-                              >
-                                {bankFlags.includes(entry.id) ? "Marked" : "Mark Issue"}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {activeView === "ledger" && (
-                  <div className="sim-table-wrap">
-                    <table className="sim-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Account</th>
-                          <th>Memo</th>
-                          <th>Amount</th>
-                          <th>Mark</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {scenario.ledgerEntries.map((entry) => (
-                          <tr key={entry.id}>
-                            <td>{entry.date}</td>
-                            <td>{entry.account}</td>
-                            <td>{entry.memo}</td>
-                            <td>{currency(entry.amount)}</td>
-                            <td>
-                              <button
-                                type="button"
-                                className={`sim-mark ${ledgerFlags.includes(entry.id) ? "active" : ""}`}
-                                onClick={() => toggleFlag(ledgerFlags, setLedgerFlags, entry.id)}
-                              >
-                                {ledgerFlags.includes(entry.id) ? "Marked" : "Mark Issue"}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {activeView === "adjustments" && (
-                  <div className="sim-adjustments">
-                    {scenario.adjustmentOptions.map((option) => (
-                      <label key={option.id} className="sim-check">
-                        <input
-                          type="checkbox"
-                          checked={selectedAdjustments.includes(option.id)}
-                          onChange={() => toggleAdjustment(option.id)}
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           )}

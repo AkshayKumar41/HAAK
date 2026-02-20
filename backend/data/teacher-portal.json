@@ -1,196 +1,208 @@
 {
   "classes": [
     {
-      "id": "class-1771569009091",
-      "name": "asd",
-      "status": "Active",
-      "students": [],
-      "assessments": []
-    },
-    {
-      "id": "acct-101",
-      "name": "Accounting 101",
+      "id": "acct-305",
+      "name": "Accounting 305 - Revenue Systems",
       "status": "Active",
       "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28"
+        "Ava Kim",
+        "Noah Patel",
+        "Ethan Cruz",
+        "Mia Brooks",
+        "Lucas Nguyen",
+        "Sophia Chen",
+        "Elena Rossi",
+        "Mason Reed"
       ],
       "assessments": [
         {
-          "id": "acct-101-1771568885539",
-          "title": "aa",
-          "prompt": "aa",
+          "id": "acct-305-midterm-sim",
+          "title": "Midterm Simulation - Revenue Reconciliation",
+          "prompt": "Build an interactive office-style simulation where students reconcile October revenue between sales ledger, cash receipts, and bank statement. Require students to identify timing differences, duplicate postings, and one missing fee.",
           "keyConcepts": [
-            "a",
-            "a"
+            "Statement Analysis",
+            "Error Detection",
+            "Journal Adjustments",
+            "Evidence-Based Justification"
           ],
-          "files": [],
+          "files": [
+            {
+              "name": "sales_ledger_oct.xlsx",
+              "size": 148320,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            {
+              "name": "bank_statement_oct.pdf",
+              "size": 92214,
+              "type": "application/pdf"
+            },
+            {
+              "name": "cash_receipts_oct.csv",
+              "size": 43219,
+              "type": "text/csv"
+            }
+          ],
           "scores": [
             {
-              "id": "score-1771569730849",
-              "studentName": "Teacher",
-              "score": 25,
+              "id": "score-1749996301001",
+              "studentName": "Ava Kim",
+              "score": 92,
               "breakdown": [
                 {
-                  "concept": "a",
-                  "correct": 2,
-                  "total": 8
+                  "concept": "Statement Analysis",
+                  "correct": 4,
+                  "total": 5
+                },
+                {
+                  "concept": "Error Detection",
+                  "correct": 5,
+                  "total": 5
+                },
+                {
+                  "concept": "Journal Adjustments",
+                  "correct": 4,
+                  "total": 5
                 }
               ],
-              "submittedAt": "2026-02-20T06:42:10.849Z"
+              "submittedAt": "2026-02-17T18:35:20.000Z"
+            },
+            {
+              "id": "score-1749996301002",
+              "studentName": "Noah Patel",
+              "score": 84,
+              "breakdown": [
+                {
+                  "concept": "Statement Analysis",
+                  "correct": 3,
+                  "total": 5
+                },
+                {
+                  "concept": "Error Detection",
+                  "correct": 4,
+                  "total": 5
+                },
+                {
+                  "concept": "Journal Adjustments",
+                  "correct": 4,
+                  "total": 5
+                }
+              ],
+              "submittedAt": "2026-02-17T19:12:44.000Z"
             }
-          ]
+          ],
+          "generatedQuiz": null
         },
         {
-          "id": "acct-101-1771568610543",
-          "title": "num 2",
-          "prompt": "2",
-          "keyConcepts": [],
-          "files": [],
-          "scores": []
-        },
-        {
-          "id": "acct-101-1771567320783",
-          "title": "asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": []
+          "id": "acct-305-practice-cashflow",
+          "title": "Practice Lab - Cashflow Anomaly Investigation",
+          "prompt": "Create a guided practice simulation where students investigate cashflow anomalies, document their findings, and recommend correcting entries with rationale.",
+          "keyConcepts": [
+            "Variance Investigation",
+            "Internal Controls",
+            "Adjustment Prioritization"
+          ],
+          "files": [
+            {
+              "name": "cashflow_dashboard_q4.xlsx",
+              "size": 205004,
+              "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            {
+              "name": "vendor_payments_q4.csv",
+              "size": 62110,
+              "type": "text/csv"
+            }
+          ],
+          "scores": [],
+          "generatedQuiz": null
         }
       ]
     },
     {
       "id": "bio-220",
-      "name": "Biology 220",
+      "name": "Biology 220 - Cell Systems Lab",
       "status": "Active",
       "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19",
-        "Student 20",
-        "Student 21",
-        "Student 22",
-        "Student 23",
-        "Student 24",
-        "Student 25",
-        "Student 26",
-        "Student 27",
-        "Student 28",
-        "Student 29",
-        "Student 30",
-        "Student 31",
-        "Student 32",
-        "Student 33",
-        "Student 34"
+        "Isla Carter",
+        "Liam Ortiz",
+        "Zoe Martinez",
+        "Daniel Park",
+        "Maya Thompson",
+        "Owen Scott",
+        "Harper Lee"
       ],
       "assessments": [
         {
-          "id": "bio-220-1771568575223",
-          "title": "asd",
-          "prompt": "asd",
-          "keyConcepts": [],
-          "files": [],
-          "scores": []
-        },
-        {
-          "id": "bio-lab-2",
-          "title": "Cell Lab Prep",
-          "prompt": "Draft a lab-readiness assessment covering cell structure, microscope handling, and stain safety. Keep language beginner-friendly.",
-          "keyConcepts": [],
-          "files": [],
-          "scores": []
-        }
-      ]
-    },
-    {
-      "id": "arch-301",
-      "name": "Architecture Studio 301",
-      "status": "Active",
-      "students": [
-        "Student 1",
-        "Student 2",
-        "Student 3",
-        "Student 4",
-        "Student 5",
-        "Student 6",
-        "Student 7",
-        "Student 8",
-        "Student 9",
-        "Student 10",
-        "Student 11",
-        "Student 12",
-        "Student 13",
-        "Student 14",
-        "Student 15",
-        "Student 16",
-        "Student 17",
-        "Student 18",
-        "Student 19"
-      ],
-      "assessments": [
-        {
-          "id": "arch-concept-1",
-          "title": "Concept Design Critique",
-          "prompt": "Generate a rubric-based assessment for concept sketches: spatial logic, function, materials, and clarity of presentation notes.",
-          "keyConcepts": [],
-          "files": [],
+          "id": "bio-220-lab-readiness",
+          "title": "Lab Readiness Simulation - Microscopy and Stains",
+          "prompt": "Generate an interactive lab-prep simulation where students choose correct microscope setup steps, identify contamination risks, and select proper staining protocol.",
+          "keyConcepts": [
+            "Microscope Handling",
+            "Cell Structure Recognition",
+            "Lab Safety Protocols"
+          ],
+          "files": [
+            {
+              "name": "microscopy_procedure_sheet.pdf",
+              "size": 118409,
+              "type": "application/pdf"
+            },
+            {
+              "name": "cell_images_reference_pack.zip",
+              "size": 4518920,
+              "type": "application/zip"
+            }
+          ],
           "scores": [
             {
-              "id": "score-1771569701091",
-              "studentName": "Teacher",
-              "score": 13,
+              "id": "score-1749996401001",
+              "studentName": "Isla Carter",
+              "score": 89,
               "breakdown": [
                 {
-                  "concept": "General Understanding",
-                  "correct": 1,
-                  "total": 8
+                  "concept": "Microscope Handling",
+                  "correct": 5,
+                  "total": 6
+                },
+                {
+                  "concept": "Cell Structure Recognition",
+                  "correct": 4,
+                  "total": 5
+                },
+                {
+                  "concept": "Lab Safety Protocols",
+                  "correct": 4,
+                  "total": 5
                 }
               ],
-              "submittedAt": "2026-02-20T06:41:41.091Z"
+              "submittedAt": "2026-02-18T15:24:11.000Z"
             }
-          ]
+          ],
+          "generatedQuiz": null
+        },
+        {
+          "id": "bio-220-capstone-case",
+          "title": "Capstone Case - Cell Response Analysis",
+          "prompt": "Build a case-based assessment where students analyze a mock lab incident, interpret cell response data, and recommend corrective experimental steps.",
+          "keyConcepts": [
+            "Data Interpretation",
+            "Experimental Design",
+            "Root Cause Analysis"
+          ],
+          "files": [
+            {
+              "name": "cell_response_dataset.csv",
+              "size": 58234,
+              "type": "text/csv"
+            },
+            {
+              "name": "lab_incident_report.docx",
+              "size": 35877,
+              "type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            }
+          ],
+          "scores": [],
+          "generatedQuiz": null
         }
       ]
     }

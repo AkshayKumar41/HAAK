@@ -157,6 +157,10 @@ main {
   gap: 1.8rem;
 }
 
+.sim-main-full {
+  width: min(1920px, 98vw);
+}
+
 .login-main {
   min-height: 100vh;
   align-content: center;
@@ -271,33 +275,55 @@ h1 {
   font-weight: 600;
 }
 
-.preview-card ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.7rem;
-}
-
-.preview-card li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  background: var(--surface-soft);
+.sample-test-card {
+  margin-top: 0.7rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  padding: 0.76rem 0.84rem;
+  background: var(--surface-soft);
+  padding: 0.72rem 0.82rem;
 }
 
-.preview-card span {
+.sample-test-label {
+  margin: 0;
   color: var(--ink-500);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
 }
 
-.preview-card strong {
-  text-align: right;
-  font-size: 0.9rem;
-  font-weight: 700;
+.sample-test-text,
+.sample-test-question {
+  margin: 0.42rem 0 0;
+  color: var(--ink-700);
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.sample-task-list {
+  margin-top: 0.44rem;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.sample-task-item {
+  margin: 0;
+  color: var(--ink-700);
+  border: 1px solid rgba(162, 136, 206, 0.35);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.88rem;
+}
+
+.sample-test-option {
+  margin: 0.35rem 0 0;
+  border: 1px solid rgba(162, 136, 206, 0.35);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink-700);
+  padding: 0.42rem 0.55rem;
+  font-size: 0.88rem;
 }
 
 .panel,
@@ -594,6 +620,56 @@ h1 {
   padding: 0.85rem;
 }
 
+.sim-workspace {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  overflow: hidden;
+  min-height: 780px;
+}
+
+.explorer-panel {
+  border-right: 1px solid var(--line);
+  background: #f8f6fc;
+  padding: 0.75rem;
+}
+
+.file-tree {
+  margin-top: 0.45rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.file-indent {
+  padding-left: 0.72rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.folder-btn,
+.file-btn {
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  color: var(--ink-700);
+  padding: 0.35rem 0.45rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.folder-btn:hover,
+.file-btn:hover {
+  background: #fff;
+}
+
+.file-btn {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.86rem;
+}
+
 .task-list {
   display: grid;
   gap: 0.5rem;
@@ -638,6 +714,41 @@ h1 {
   margin-bottom: 0.7rem;
 }
 
+.excel-shell {
+  background: linear-gradient(180deg, #fdfefe 0%, #f4f8f4 100%);
+}
+
+.excel-tabs {
+  margin-bottom: 0.45rem;
+}
+
+.excel-formula {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 0.45rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.excel-fx {
+  border: 1px solid #b7cfb7;
+  border-radius: 8px;
+  background: #ecf6ec;
+  color: #1f6f43;
+  font-weight: 700;
+  height: 34px;
+  display: grid;
+  place-items: center;
+}
+
+.excel-formula input {
+  height: 34px;
+  border: 1px solid #cfe0cf;
+  border-radius: 8px;
+  background: #fff;
+  color: #2a4f3b;
+}
+
 .sim-tab {
   border: 1px solid var(--line);
   background: #fff;
@@ -660,6 +771,11 @@ h1 {
   overflow: auto;
 }
 
+.excel-grid-wrap {
+  border-color: #cfe0cf;
+  box-shadow: inset 0 0 0 1px #e7efe7;
+}
+
 .sim-table {
   width: 100%;
   border-collapse: collapse;
@@ -677,6 +793,21 @@ h1 {
 .sim-table th {
   background: var(--surface-soft);
   color: var(--ink-700);
+}
+
+.excel-grid th {
+  background: #ebf3eb;
+  border-bottom: 1px solid #c8dac8;
+  color: #2b4e3a;
+  font-weight: 700;
+}
+
+.excel-grid td {
+  border-bottom: 1px solid #dce7dc;
+}
+
+.excel-grid tr:nth-child(even) td {
+  background: #fbfefb;
 }
 
 .sim-mark {
@@ -698,6 +829,13 @@ h1 {
 .sim-adjustments {
   display: grid;
   gap: 0.56rem;
+}
+
+.excel-adjustments {
+  border: 1px solid #cfe0cf;
+  border-radius: 12px;
+  padding: 0.65rem;
+  background: #fbfefb;
 }
 
 .sim-check {
@@ -989,6 +1127,10 @@ input:focus {
   }
 
   .sim-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-workspace {
     grid-template-columns: 1fr;
   }
 

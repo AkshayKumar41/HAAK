@@ -32,7 +32,7 @@ export default function HomePage() {
       <header className="site-header reveal">
         <a className="brand" href="#top">
           <span className="brand-mark" aria-hidden="true" />
-          <span className="brand-text">intumotion</span>
+          <span className="brand-text">IntuMotion</span>
         </a>
         <nav>
           <a href="#vision">Vision</a>
@@ -52,32 +52,45 @@ export default function HomePage() {
               Turn lesson plans into guided, real-world scenarios where students build understanding with confidence.
             </p>
             <div className="hero-actions">
-              <Link to="/login" className="btn btn-primary">
+              <Link to="/login?role=student" className="btn btn-primary">
                 Start as Student
               </Link>
-              <Link to="/login" className="btn btn-ghost">
-                Start as Institution
+              <Link to="/login?role=teacher" className="btn btn-ghost">
+                Start as Teacher
               </Link>
             </div>
           </div>
 
           <article className="preview-card reveal-stagger">
             <h3>Live Preview</h3>
-            <p className="preview-title">Accounting Scenario: Office Reconciliation</p>
-            <ul>
-              <li>
-                <span>Environment</span>
-                <strong>Finance workplace simulation</strong>
-              </li>
-              <li>
-                <span>Mode</span>
-                <strong>Supportive adaptive coaching</strong>
-              </li>
-              <li>
-                <span>Outcome</span>
-                <strong>Mastery path + confidence summary</strong>
-              </li>
-            </ul>
+            <p className="preview-title">Sample Test Preview: Revenue Reconciliation</p>
+
+            <div className="sample-test-card">
+              <p className="sample-test-label">Scenario</p>
+              <p className="sample-test-text">
+                You are the staff accountant for North Ridge Retail. Reconcile October cash activity between the bank
+                statement and general ledger, identify discrepancies, and post only valid adjustments.
+              </p>
+            </div>
+
+            <div className="sample-test-card">
+              <p className="sample-test-label">Required Tasks</p>
+              <div className="sample-task-list">
+                <p className="sample-task-item">Open bank statement, ledger, and adjustments workbook.</p>
+                <p className="sample-task-item">Flag one duplicate vendor payment and one missing bank fee.</p>
+                <p className="sample-task-item">Select the two valid adjusting entries.</p>
+              </div>
+            </div>
+
+            <div className="sample-test-card">
+              <p className="sample-test-label">Sample Concept Check</p>
+              <p className="sample-test-question">
+                Which evidence should be treated as external source-of-truth during reconciliation?
+              </p>
+              <p className="sample-test-option">A. Budget forecast sheet</p>
+              <p className="sample-test-option">B. Bank statement transaction log</p>
+              <p className="sample-test-option">C. Unposted journal draft</p>
+            </div>
           </article>
         </section>
 
